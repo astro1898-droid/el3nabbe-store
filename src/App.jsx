@@ -3,548 +3,440 @@ import { supabase } from './supabaseClient';
 import { 
   Award, Gift, Share2, Sparkles, ShoppingBag, 
   LogOut, Users, Eye, ShieldCheck, Flame, 
-  X, Plus, Minus, Send, Compass, Globe, Moon, Sun, ChevronRight, ChevronLeft, RefreshCw
+  X, Plus, Minus, Send, Compass, Globe, Moon, Sun, 
+  RefreshCw, Clock, CheckCircle2, ChevronDown, Package
 } from 'lucide-react';
 
 const STORE_WHATSAPP_NUMBER = "201110192901";
 
-// قاعدة بيانات العطور الكاملة مع الصور والخصائص لمستكشف العطور
+// قائمة العطور الاحترافية مع صور زجاجات عطور نقية (بدون أشخاص أو كريمات)
 const PERFUMES = [
-  // رجالي وفخم
+  // قسم الرجال
   {
     id: 1,
-    name: "Imperial Valley - Gissah",
-    nameAr: "إمبريال فالي - قصة",
+    name: "Imperial Valley",
+    nameAr: "إمبريال فالي",
+    brand: "Gissah",
     category: "men",
     family: "leather_oriental",
     occasion: "luxury",
     season: "all",
-    price: 850,
-    pointsReward: 85,
-    tag: "Signature",
     tagAr: "ملكي فاخر",
-    notes: "Davana, Italian Bergamot, Pink Pepper, Amber, Oud",
+    tagEn: "Royal Signature",
     notesAr: "دافانا، برغموت إيطالي، فلفل وردي، عنبر، عود أبيض",
-    image: "https://images.unsplash.com/photo-1594035910387-fea47794261f?auto=format&fit=crop&w=600&q=80"
+    notesEn: "Davana, Italian Bergamot, Pink Pepper, Amber, White Oud",
+    image: "https://images.unsplash.com/photo-1594035910387-fea47794261f?auto=format&fit=crop&w=600&q=80",
+    prices: { "30ml": 450, "50ml": 680, "100ml": 980, "tester": 250 }
   },
   {
     id: 2,
     name: "Bleu de Chanel",
     nameAr: "بلو دي شانيل",
+    brand: "Chanel",
     category: "men",
     family: "fresh_woody",
     occasion: "daily_office",
     season: "summer",
-    price: 750,
-    pointsReward: 75,
-    tag: "Best Seller",
     tagAr: "الأكثر مبيعاً",
-    notes: "Grapefruit, Lemon, Mint, Cedar, Sandalwood",
+    tagEn: "Iconic Fresh",
     notesAr: "جريب فروت، ليمون، نعناع، خشب الأرز، صندل",
-    image: "https://images.unsplash.com/photo-1523293182086-7651a899d37f?auto=format&fit=crop&w=600&q=80"
+    notesEn: "Grapefruit, Lemon, Mint, Cedarwood, Sandalwood",
+    image: "https://images.unsplash.com/photo-1523293182086-7651a899d37f?auto=format&fit=crop&w=600&q=80",
+    prices: { "30ml": 420, "50ml": 620, "100ml": 890, "tester": 220 }
   },
   {
     id: 3,
     name: "Prada Luna Rossa Black",
     nameAr: "برادا بلاك",
+    brand: "Prada",
     category: "men",
     family: "amber_powdery",
     occasion: "evening",
     season: "winter",
-    price: 720,
-    pointsReward: 72,
-    tag: "Mysterious",
-    tagAr: "غامض وجذاب",
-    notes: "Bergamot, Angelica, Patchouli, Amber, Coumarin",
-    notesAr: "برغموت، أنجليكا، باتشولي، عنبر، كومارين دافئ",
-    image: "https://images.unsplash.com/photo-1547887537-6158d64c35b3?auto=format&fit=crop&w=600&q=80"
+    tagAr: "غامض ودافئ",
+    tagEn: "Dark & Warm",
+    notesAr: "برغموت، أنجليكا، باتشولي، عنبر، كومارين",
+    notesEn: "Bergamot, Angelica, Patchouli, Amber, Coumarin",
+    image: "https://images.unsplash.com/photo-1547887537-6158d64c35b3?auto=format&fit=crop&w=600&q=80",
+    prices: { "30ml": 400, "50ml": 600, "100ml": 850, "tester": 200 }
   },
   {
     id: 4,
     name: "Creed Aventus",
     nameAr: "كريد أفينتوس",
+    brand: "Creed",
     category: "men",
     family: "fruity_smoky",
     occasion: "luxury",
     season: "all",
-    price: 950,
-    pointsReward: 95,
-    tag: "King of Scents",
     tagAr: "عطر الملوك",
-    notes: "Pineapple, Birch, Black Currant, Musk, Oakmoss",
-    notesAr: "أناناس، بتولا مدخنة، كشمش أسود، مسك، طحلب البلوط",
-    image: "https://images.unsplash.com/photo-1592945403244-b3fbafd7f539?auto=format&fit=crop&w=600&q=80"
+    tagEn: "Legendary",
+    notesAr: "أناناس، بتولا مدخنة، كشمش أسود، مسك نقي",
+    notesEn: "Pineapple, Smoky Birch, Blackcurrant, Rich Musk",
+    image: "https://images.unsplash.com/photo-1592945403244-b3fbafd7f539?auto=format&fit=crop&w=600&q=80",
+    prices: { "30ml": 550, "50ml": 790, "100ml": 1150, "tester": 280 }
   },
   {
     id: 5,
-    name: "Sauvage Elixir - Dior",
+    name: "Sauvage Elixir",
     nameAr: "سوفاج إلكسير",
+    brand: "Dior",
     category: "men",
     family: "spicy_deep",
     occasion: "evening",
     season: "winter",
-    price: 880,
-    pointsReward: 88,
-    tag: "Intense Beast",
-    tagAr: "فوحان أسطوري",
-    notes: "Nutmeg, Cinnamon, Cardamom, Lavender, Licorice",
-    notesAr: "جوزة الطيب، قرفة، هيل، لافندر نقي، عرق سوس",
-    image: "https://images.unsplash.com/photo-1588405748880-12d1d2a59f75?auto=format&fit=crop&w=600&q=80"
+    tagAr: "ثبات وفوحان جبار",
+    tagEn: "Beast Mode",
+    notesAr: "جوزة الطيب، قرفة، هيل، لافندر فرنسي، عرق سوس",
+    notesEn: "Nutmeg, Cinnamon, Cardamom, French Lavender, Licorice",
+    image: "https://images.unsplash.com/photo-1588405748880-12d1d2a59f75?auto=format&fit=crop&w=600&q=80",
+    prices: { "30ml": 500, "50ml": 750, "100ml": 1050, "tester": 260 }
   },
   {
     id: 6,
-    name: "Oud Wood - Tom Ford",
-    nameAr: "توم فورد عود وود",
-    category: "unisex",
+    name: "Oud Wood",
+    nameAr: "عود وود",
+    brand: "Tom Ford",
+    category: "men",
     family: "leather_oriental",
     occasion: "luxury",
     season: "winter",
-    price: 920,
-    pointsReward: 92,
-    tag: "Classy Oud",
-    tagAr: "عود راقي",
-    notes: "Agarwood, Brazilian Rosewood, Cardamom, Tonka Bean",
-    notesAr: "خشب العود، خشب الورد، هيل، حبوب التونكا، نجيل الهند",
-    image: "https://images.unsplash.com/photo-1615397349754-cfa2066a298e?auto=format&fit=crop&w=600&q=80"
+    tagAr: "عود مدخن فاخر",
+    tagEn: "Smoky Oud",
+    notesAr: "خشب العود النادر، خشب الورد، هيل، حبوب التونكا",
+    notesEn: "Rare Agarwood, Rosewood, Cardamom, Tonka Bean",
+    image: "https://images.unsplash.com/photo-1615397349754-cfa2066a298e?auto=format&fit=crop&w=600&q=80",
+    prices: { "30ml": 520, "50ml": 780, "100ml": 1100, "tester": 270 }
   },
   {
     id: 7,
-    name: "Azzaro The Most Wanted",
-    nameAr: "أزارو ذا موست وانتد",
+    name: "The Most Wanted",
+    nameAr: "ذا موست وانتد",
+    brand: "Azzaro",
     category: "men",
     family: "gourmand_sweet",
     occasion: "dating",
     season: "winter",
-    price: 680,
-    pointsReward: 68,
-    tag: "Date Night",
-    tagAr: "سلاح الجاذبية",
-    notes: "Cardamom, Toffee, Amberwood, Bourbon Vanilla",
-    notesAr: "حب الهال، كراميل التوفي، خشب العنبر، فانيليا البوربون",
-    image: "https://images.unsplash.com/photo-1594035910387-fea47794261f?auto=format&fit=crop&w=600&q=80"
+    tagAr: "سلاح المواعيد",
+    tagEn: "Date Weapon",
+    notesAr: "حب الهال، توفي مكرمل، فانيليا البوربون",
+    notesEn: "Cardamom, Caramel Toffee, Bourbon Vanilla",
+    image: "https://images.unsplash.com/photo-1594035910387-fea47794261f?auto=format&fit=crop&w=600&q=80",
+    prices: { "30ml": 390, "50ml": 580, "100ml": 820, "tester": 200 }
   },
   {
     id: 8,
-    name: "Baccarat Rouge 540",
-    nameAr: "باكارات روج 540",
-    category: "unisex",
-    family: "sweet_amber",
-    occasion: "luxury",
-    season: "all",
-    price: 950,
-    pointsReward: 95,
-    tag: "Pure Glamour",
-    tagAr: "الفخامة المطلقة",
-    notes: "Jasmine, Saffron, Amberwood, Ambergris, Cedar",
-    notesAr: "ياسمين، زعفران أحمر، خشب العنبر، كتل العنبر، أرز",
-    image: "https://images.unsplash.com/photo-1563178406-4cdc2923acbc?auto=format&fit=crop&w=600&q=80"
-  },
-  {
-    id: 9,
-    name: "9 PM - Afnan",
-    nameAr: "ناين بي إم - أفنان",
+    name: "9 PM",
+    nameAr: "ناين بي إم",
+    brand: "Afnan",
     category: "men",
     family: "gourmand_sweet",
     occasion: "evening",
     season: "winter",
-    price: 550,
-    pointsReward: 55,
-    tag: "Party Monster",
-    tagAr: "أقوى بديل للألترا ميل",
-    notes: "Apple, Cinnamon, Wild Lavender, Vanilla, Tonka",
-    notesAr: "تفاح أحمر، قرفة دافئة، لافندر بري، فانيليا، تونكا",
-    image: "https://images.unsplash.com/photo-1523293182086-7651a899d37f?auto=format&fit=crop&w=600&q=80"
+    tagAr: "جاذبية السهرات",
+    tagEn: "Night Magnet",
+    notesAr: "تفاح أحمر، قرفة دافئة، لافندر بري، فانيليا ناعمة",
+    notesEn: "Red Apple, Warm Cinnamon, Wild Lavender, Vanilla",
+    image: "https://images.unsplash.com/photo-1523293182086-7651a899d37f?auto=format&fit=crop&w=600&q=80",
+    prices: { "30ml": 320, "50ml": 480, "100ml": 680, "tester": 160 }
   },
   {
-    id: 10,
-    name: "Paco Rabanne Invictus",
-    nameAr: "باكو رابان إنفكتوس",
+    id: 9,
+    name: "Invictus",
+    nameAr: "إنفكتوس",
+    brand: "Paco Rabanne",
     category: "men",
     family: "fresh_aquatic",
     occasion: "daily_office",
     season: "summer",
-    price: 640,
-    pointsReward: 64,
-    tag: "Champion",
-    tagAr: "انتعاش مائي بطولي",
-    notes: "Sea Notes, Grapefruit, Bay Leaf, Jasmine, Guaiac Wood",
-    notesAr: "نوتات بحرية، جريب فروت، ورق الغار، ياسمين، خشب الغاياك",
-    image: "https://images.unsplash.com/photo-1547887537-6158d64c35b3?auto=format&fit=crop&w=600&q=80"
+    tagAr: "انتعاش البطولة",
+    tagEn: "Victory Fresh",
+    notesAr: "نوتات بحرية، جريب فروت، ورق الغار، خشب الغاياك",
+    notesEn: "Marine Accords, Grapefruit, Bay Leaf, Guaiac Wood",
+    image: "https://images.unsplash.com/photo-1547887537-6158d64c35b3?auto=format&fit=crop&w=600&q=80",
+    prices: { "30ml": 380, "50ml": 560, "100ml": 790, "tester": 190 }
+  },
+  {
+    id: 10,
+    name: "Ultra Male",
+    nameAr: "ألترا ميل",
+    brand: "Jean Paul Gaultier",
+    category: "men",
+    family: "gourmand_sweet",
+    occasion: "dating",
+    season: "winter",
+    tagAr: "سيد السهرات",
+    tagEn: "Party King",
+    notesAr: "كمثرى مقرمشة، لافندر، نعناع، فانيليا سوداء",
+    notesEn: "Crisp Pear, Lavender, Mint, Black Vanilla",
+    image: "https://images.unsplash.com/photo-1592945403244-b3fbafd7f539?auto=format&fit=crop&w=600&q=80",
+    prices: { "30ml": 420, "50ml": 630, "100ml": 880, "tester": 220 }
   },
   {
     id: 11,
-    name: "Jean Paul Gaultier Ultra Male",
-    nameAr: "ألترا ميل - جان بول غوتييه",
+    name: "Stronger With You Intensely",
+    nameAr: "سترونجر ويذ يو إنتنسلي",
+    brand: "Armani",
     category: "men",
     family: "gourmand_sweet",
     occasion: "dating",
     season: "winter",
-    price: 740,
-    pointsReward: 74,
-    tag: "Club King",
-    tagAr: "جاذبية لا تقاوم",
-    notes: "Pear, Lavender, Mint, Black Vanilla, Cinnamon",
-    notesAr: "كمثرى مقرمشة، لافندر، نعناع، فانيليا سوداء، قرفة",
-    image: "https://images.unsplash.com/photo-1592945403244-b3fbafd7f539?auto=format&fit=crop&w=600&q=80"
+    tagAr: "دفء الشتاء الأول",
+    tagEn: "Winter Warmth",
+    notesAr: "فلفل وردي، توفي دسم، قرفة، جلد الغزال، فانيليا",
+    notesEn: "Pink Pepper, Toffee, Cinnamon, Suede, Rich Vanilla",
+    image: "https://images.unsplash.com/photo-1588405748880-12d1d2a59f75?auto=format&fit=crop&w=600&q=80",
+    prices: { "30ml": 450, "50ml": 660, "100ml": 920, "tester": 240 }
   },
   {
     id: 12,
-    name: "Good Girl - Carolina Herrera",
-    nameAr: "جود جيرل - كارولينا هيريرا",
+    name: "Black XS For Men",
+    nameAr: "بلاك إكس إس رجالي",
+    brand: "Paco Rabanne",
+    category: "men",
+    family: "fruity_sweet",
+    occasion: "dating",
+    season: "winter",
+    tagAr: "روك أند رول",
+    tagEn: "Rebel Charm",
+    notesAr: "ليمون كالابريا، حلوى البرالين، قرفة، عنبر أسود",
+    notesEn: "Calabrian Lemon, Praline, Cinnamon, Black Amber",
+    image: "https://images.unsplash.com/photo-1594035910387-fea47794261f?auto=format&fit=crop&w=600&q=80",
+    prices: { "30ml": 380, "50ml": 550, "100ml": 780, "tester": 190 }
+  },
+
+  // قسم النساء
+  {
+    id: 13,
+    name: "Good Girl",
+    nameAr: "جود جيرل",
+    brand: "Carolina Herrera",
     category: "women",
     family: "sweet_floral",
     occasion: "evening",
     season: "winter",
-    price: 760,
-    pointsReward: 76,
-    tag: "Femme Fatale",
     tagAr: "أنثوي ساحر",
-    notes: "Almond, Coffee, Tuberose, Jasmine Sambac, Cacao, Tonka",
-    notesAr: "لوز، قهوة مركزة، مسك الروم، ياسمين، كاكاو، تونكا",
-    image: "https://images.unsplash.com/photo-1588405748880-12d1d2a59f75?auto=format&fit=crop&w=600&q=80"
-  },
-  {
-    id: 13,
-    name: "Scandal - Jean Paul Gaultier",
-    nameAr: "سكاندال - فضيحة",
-    category: "women",
-    family: "gourmand_sweet",
-    occasion: "dating",
-    season: "winter",
-    price: 750,
-    pointsReward: 75,
-    tag: "Honey Bomb",
-    tagAr: "قنبلة العسل والكراميل",
-    notes: "Blood Orange, Mandarin, Honey, Gardenia, Caramel, Patchouli",
-    notesAr: "برتقال دموي، يوسفي، عسل نقي، غاردينيا، كراميل، باتشولي",
-    image: "https://images.unsplash.com/photo-1563178406-4cdc2923acbc?auto=format&fit=crop&w=600&q=80"
+    tagEn: "Sensual Chic",
+    notesAr: "لوز، قهوة محمصة، مسك الروم، ياسمين، كاكاو",
+    notesEn: "Almond, Roasted Coffee, Tuberose, Jasmine, Cocoa",
+    image: "https://images.unsplash.com/photo-1592945403244-b3fbafd7f539?auto=format&fit=crop&w=600&q=80",
+    prices: { "30ml": 430, "50ml": 640, "100ml": 890, "tester": 230 }
   },
   {
     id: 14,
-    name: "Yara Candy - Lattafa",
-    nameAr: "يارا كاندي - لطافة",
+    name: "Scandal",
+    nameAr: "سكاندال",
+    brand: "Jean Paul Gaultier",
     category: "women",
-    family: "fruity_sweet",
-    occasion: "daily_office",
-    season: "all",
-    price: 520,
-    pointsReward: 52,
-    tag: "Trending Pink",
-    tagAr: "تريند الأنوثة والحلويات",
-    notes: "Green Tangerine, Blackcurrant, Strawberry Fizz, Vanilla",
-    notesAr: "يوسفي أخضر، كشمش، حلاوة الفراولة، فانيليا سكرية",
-    image: "https://images.unsplash.com/photo-1594035910387-fea47794261f?auto=format&fit=crop&w=600&q=80"
+    family: "gourmand_sweet",
+    occasion: "dating",
+    season: "winter",
+    tagAr: "عسل وكراميل مركز",
+    tagEn: "Honey Bomb",
+    notesAr: "برتقال دموي، عسل طبيعي نقي، غاردينيا، باتشولي",
+    notesEn: "Blood Orange, Pure Honey, Gardenia, Warm Patchouli",
+    image: "https://images.unsplash.com/photo-1588405748880-12d1d2a59f75?auto=format&fit=crop&w=600&q=80",
+    prices: { "30ml": 440, "50ml": 650, "100ml": 910, "tester": 230 }
   },
   {
     id: 15,
-    name: "Jimmy Choo EDP",
-    nameAr: "جيمي شو النسائي",
+    name: "Baccarat Rouge 540",
+    nameAr: "باكارات روج 540",
+    brand: "Maison Francis Kurkdjian",
     category: "women",
-    family: "sweet_floral",
-    occasion: "daily_office",
+    family: "sweet_amber",
+    occasion: "luxury",
     season: "all",
-    price: 660,
-    pointsReward: 66,
-    tag: "Modern Chic",
-    tagAr: "أناقة عصرية",
-    notes: "Pear, Mandarin, Orchid, Toffee, Indonesian Patchouli",
-    notesAr: "كمثرى، ماندارين، أوركيد ساحر، توفي دافئ، باتشولي",
-    image: "https://images.unsplash.com/photo-1523293182086-7651a899d37f?auto=format&fit=crop&w=600&q=80"
+    tagAr: "قمة الفخامة",
+    tagEn: "Supreme Luxe",
+    notesAr: "زعفران أحمر، ياسمين مصري، خشب العنبر، كتل العنبر",
+    notesEn: "Red Saffron, Egyptian Jasmine, Amberwood, Ambergris",
+    image: "https://images.unsplash.com/photo-1523293182086-7651a899d37f?auto=format&fit=crop&w=600&q=80",
+    prices: { "30ml": 580, "50ml": 820, "100ml": 1190, "tester": 290 }
   },
   {
     id: 16,
-    name: "Khamrah - Lattafa",
-    nameAr: "خمرة - لطافة",
-    category: "unisex",
-    family: "spicy_gourmand",
-    occasion: "evening",
-    season: "winter",
-    price: 580,
-    pointsReward: 58,
-    tag: "Apple Pie",
-    tagAr: "فخامة القرفة والتمر",
-    notes: "Cinnamon, Nutmeg, Dates, Praline, Vanilla, Tonka",
-    notesAr: "قرفة فاخرة، جوزة الطيب، تمور، برالين، فانيليا دافئة",
-    image: "https://images.unsplash.com/photo-1615397349754-cfa2066a298e?auto=format&fit=crop&w=600&q=80"
+    name: "Yara Candy",
+    nameAr: "يارا كاندي",
+    brand: "Lattafa",
+    category: "women",
+    family: "fruity_sweet",
+    occasion: "daily_office",
+    season: "all",
+    tagAr: "كاندي وفراولة",
+    tagEn: "Sweet Candy",
+    notesAr: "يوسفي، كشمش أحمر، فوار الفراولة، فانيليا سكرية",
+    notesEn: "Mandarin, Redcurrant, Strawberry Fizz, Sugar Vanilla",
+    image: "https://images.unsplash.com/photo-1547887537-6158d64c35b3?auto=format&fit=crop&w=600&q=80",
+    prices: { "30ml": 310, "50ml": 460, "100ml": 640, "tester": 150 }
   },
   {
     id: 17,
-    name: "Khamrah Qahwa",
-    nameAr: "خمرة قهوة - لطافة",
-    category: "unisex",
-    family: "spicy_gourmand",
-    occasion: "evening",
-    season: "winter",
-    price: 620,
-    pointsReward: 62,
-    tag: "Coffee Twist",
-    tagAr: "لمسة القهوة العربية الفاخرة",
-    notes: "Ginger, Cardamom, Coffee, Candied Fruits, Vanilla",
-    notesAr: "زنجبيل، هيل، قهوة محمصة، فواكه مسكرة، فانيليا",
-    image: "https://images.unsplash.com/photo-1547887537-6158d64c35b3?auto=format&fit=crop&w=600&q=80"
-  },
-  {
-    id: 18,
-    name: "Black XS for Men - Paco Rabanne",
-    nameAr: "بلاك إكس إس رجالي",
-    category: "men",
-    family: "fruity_sweet",
-    occasion: "dating",
-    season: "winter",
-    price: 640,
-    pointsReward: 64,
-    tag: "Rock & Roll",
-    tagAr: "جرأة وحلاوة البرالين",
-    notes: "Lemon, Tagetes, Praline, Cinnamon, Black Amber",
-    notesAr: "ليمون، توت العليق، حلوى البرالين، قرفة، عنبر أسود",
-    image: "https://images.unsplash.com/photo-1592945403244-b3fbafd7f539?auto=format&fit=crop&w=600&q=80"
-  },
-  {
-    id: 19,
-    name: "Black XS for Her",
-    nameAr: "بلاك إكس إس نسائي",
-    category: "women",
-    family: "fruity_sweet",
-    occasion: "evening",
-    season: "winter",
-    price: 640,
-    pointsReward: 64,
-    tag: "Sensual Rock",
-    tagAr: "أنثوي متمرد بالكاكاو",
-    notes: "Cranberry, Pink Pepper, Black Violet, Cacao, Vanilla",
-    notesAr: "توت بري، فلفل وردي، بنفسج أسود، كاكاو ناعم، فانيليا",
-    image: "https://images.unsplash.com/photo-1588405748880-12d1d2a59f75?auto=format&fit=crop&w=600&q=80"
-  },
-  {
-    id: 20,
-    name: "Bianco Latte - Giardini Di Toscana",
-    nameAr: "بيانكو لاتي",
-    category: "unisex",
-    family: "gourmand_sweet",
-    occasion: "daily_office",
-    season: "winter",
-    price: 920,
-    pointsReward: 92,
-    tag: "Viral Vanilla",
-    tagAr: "حليب الكراميل والفانيليا الخالصة",
-    notes: "Caramel, Honey, Coumarin, Vanilla, White Musk",
-    notesAr: "كراميل دسم، عسل نقي، كومارين، فانيليا مركزة، مسك أبيض",
-    image: "https://images.unsplash.com/photo-1563178406-4cdc2923acbc?auto=format&fit=crop&w=600&q=80"
-  },
-  {
-    id: 21,
-    name: "Stronger With You Intensely - Armani",
-    nameAr: "سترونجر ويذ يو إنتنسلي",
-    category: "men",
-    family: "gourmand_sweet",
-    occasion: "dating",
-    season: "winter",
-    price: 770,
-    pointsReward: 77,
-    tag: "Irresistible",
-    tagAr: "عطر الشتاء الأول",
-    notes: "Pink Pepper, Juniper, Toffee, Cinnamon, Suede, Vanilla",
-    notesAr: "فلفل وردي، عرعر، توفي مكرمل، قرفة، جلد الغزال، فانيليا",
-    image: "https://images.unsplash.com/photo-1594035910387-fea47794261f?auto=format&fit=crop&w=600&q=80"
-  },
-  {
-    id: 22,
-    name: "Midnight Rain - La Prairie",
-    nameAr: "ميدنايت رين",
-    category: "women",
-    family: "fruity_sweet",
-    occasion: "evening",
-    season: "all",
-    price: 890,
-    pointsReward: 89,
-    tag: "Rare Luxury",
-    tagAr: "عطر المطر والغموض",
-    notes: "Guava, Pomegranate, White Lily, Patchouli, Cashmere Wood",
-    notesAr: "جوافة، رمان، زنبق أبيض، أوركيد، باتشولي، خشب الكشمير",
-    image: "https://images.unsplash.com/photo-1523293182086-7651a899d37f?auto=format&fit=crop&w=600&q=80"
-  },
-  {
-    id: 23,
-    name: "Sense by Georgina (Laverne)",
-    nameAr: "سنس جورجينا - لافيرن",
+    name: "Jimmy Choo EDP",
+    nameAr: "جيمي شو النسائي",
+    brand: "Jimmy Choo",
     category: "women",
     family: "sweet_floral",
     occasion: "daily_office",
     season: "all",
-    price: 690,
-    pointsReward: 69,
-    tag: "Celebrity Elegance",
-    tagAr: "عطر جورجينا الأيقوني",
-    notes: "Blackcurrant, Mandarin, Jasmine, Cashmeran, Amber",
-    notesAr: "كشمش أسود، ماندارين، ياسمين فرنسي، كشميران، عنبر ناعم",
-    image: "https://images.unsplash.com/photo-1547887537-6158d64c35b3?auto=format&fit=crop&w=600&q=80"
+    tagAr: "أناقة ناعمة",
+    tagEn: "Modern Grace",
+    notesAr: "كمثرى، ماندارين حلو، زهرة الأوركيد، توفي دافئ",
+    notesEn: "Pear, Sweet Mandarin, Tiger Orchid, Warm Toffee",
+    image: "https://images.unsplash.com/photo-1594035910387-fea47794261f?auto=format&fit=crop&w=600&q=80",
+    prices: { "30ml": 390, "50ml": 570, "100ml": 790, "tester": 200 }
+  },
+  {
+    id: 18,
+    name: "Khamrah",
+    nameAr: "خمرة",
+    brand: "Lattafa",
+    category: "women",
+    family: "spicy_gourmand",
+    occasion: "evening",
+    season: "winter",
+    tagAr: "فخامة التمر والقرفة",
+    tagEn: "Warm Dates",
+    notesAr: "قرفة فاخرة، جوزة الطيب، تمور، حلوى البرالين، فانيليا",
+    notesEn: "Cinnamon, Nutmeg, Dates Accord, Praline, Vanilla",
+    image: "https://images.unsplash.com/photo-1615397349754-cfa2066a298e?auto=format&fit=crop&w=600&q=80",
+    prices: { "30ml": 350, "50ml": 510, "100ml": 720, "tester": 180 }
+  },
+  {
+    id: 19,
+    name: "Khamrah Qahwa",
+    nameAr: "خمرة قهوة",
+    brand: "Lattafa",
+    category: "women",
+    family: "spicy_gourmand",
+    occasion: "evening",
+    season: "winter",
+    tagAr: "قهوة عربية دافئة",
+    tagEn: "Arabic Coffee",
+    notesAr: "زنجبيل، هيل، حبوب القهوة المحمصة، فواكه مجففة",
+    notesEn: "Ginger, Cardamom, Roasted Coffee Beans, Candied Fruits",
+    image: "https://images.unsplash.com/photo-1547887537-6158d64c35b3?auto=format&fit=crop&w=600&q=80",
+    prices: { "30ml": 370, "50ml": 540, "100ml": 760, "tester": 190 }
+  },
+  {
+    id: 20,
+    name: "Black XS For Her",
+    nameAr: "بلاك إكس إس نسائي",
+    brand: "Paco Rabanne",
+    category: "women",
+    family: "fruity_sweet",
+    occasion: "evening",
+    season: "winter",
+    tagAr: "أنوثة متمردة",
+    tagEn: "Sensual Rock",
+    notesAr: "توت بري، فلفل وردي، بنفسج أسود، كاكاو، فانيليا",
+    notesEn: "Cranberry, Pink Pepper, Black Violet, Cacao, Vanilla",
+    image: "https://images.unsplash.com/photo-1592945403244-b3fbafd7f539?auto=format&fit=crop&w=600&q=80",
+    prices: { "30ml": 390, "50ml": 580, "100ml": 810, "tester": 200 }
+  },
+  {
+    id: 21,
+    name: "Bianco Latte",
+    nameAr: "بيانكو لاتي",
+    brand: "Giardini Di Toscana",
+    category: "women",
+    family: "gourmand_sweet",
+    occasion: "daily_office",
+    season: "winter",
+    tagAr: "حليب الكراميل الفاخر",
+    tagEn: "Creamy Caramel",
+    notesAr: "كراميل دسم، عسل نقي، فانيليا مركزة، مسك أبيض",
+    notesEn: "Caramel, Pure Honey, Dense Vanilla, White Musk",
+    image: "https://images.unsplash.com/photo-1588405748880-12d1d2a59f75?auto=format&fit=crop&w=600&q=80",
+    prices: { "30ml": 520, "50ml": 760, "100ml": 1090, "tester": 270 }
+  },
+  {
+    id: 22,
+    name: "Midnight Rain",
+    nameAr: "ميدنايت رين",
+    brand: "La Prairie",
+    category: "women",
+    family: "fruity_sweet",
+    occasion: "evening",
+    season: "all",
+    tagAr: "عطر المطر والغموض",
+    tagEn: "Mystic Rain",
+    notesAr: "جوافة، رمان، زنبق أبيض، أوركيد، باتشولي، كشمير",
+    notesEn: "Guava, Pomegranate, White Lily, Orchid, Cashmere Wood",
+    image: "https://images.unsplash.com/photo-1523293182086-7651a899d37f?auto=format&fit=crop&w=600&q=80",
+    prices: { "30ml": 510, "50ml": 740, "100ml": 1050, "tester": 260 }
+  },
+  {
+    id: 23,
+    name: "Sense by Georgina",
+    nameAr: "سنس جورجينا",
+    brand: "Laverne",
+    category: "women",
+    family: "sweet_floral",
+    occasion: "daily_office",
+    season: "all",
+    tagAr: "عطر جورجينا الأنيق",
+    tagEn: "Celebrity Touch",
+    notesAr: "كشمش أسود، ماندارين، ياسمين فرنسي، كشميران، عنبر",
+    notesEn: "Blackcurrant, Mandarin, French Jasmine, Cashmeran, Amber",
+    image: "https://images.unsplash.com/photo-1547887537-6158d64c35b3?auto=format&fit=crop&w=600&q=80",
+    prices: { "30ml": 420, "50ml": 620, "100ml": 860, "tester": 210 }
   },
   {
     id: 24,
     name: "Burberry Her EDP",
     nameAr: "بربري هير",
+    brand: "Burberry",
     category: "women",
     family: "fruity_sweet",
     occasion: "daily_office",
     season: "summer",
-    price: 740,
-    pointsReward: 74,
-    tag: "Berry Bliss",
-    tagAr: "سلة التوت البريطاني",
-    notes: "Strawberry, Raspberry, Blackberry, Jasmine, Musk, Amber",
-    notesAr: "فراولة، توت العليق، توت أسود، ياسمين، مسك نظيف، عنبر",
-    image: "https://images.unsplash.com/photo-1592945403244-b3fbafd7f539?auto=format&fit=crop&w=600&q=80"
+    tagAr: "سلة التوت البري",
+    tagEn: "British Berries",
+    notesAr: "فراولة، توت العليق، كشمش أسود، ياسمين، مسك",
+    notesEn: "Strawberry, Raspberry, Blackberry, Jasmine, Clean Musk",
+    image: "https://images.unsplash.com/photo-1594035910387-fea47794261f?auto=format&fit=crop&w=600&q=80",
+    prices: { "30ml": 440, "50ml": 650, "100ml": 910, "tester": 220 }
   },
   {
     id: 25,
-    name: "Victoria's Secret Bombshell & Mist Collection",
-    nameAr: "فيكتوريا سيكريت بومبشيل والمجموعات",
+    name: "Victoria's Secret Bombshell",
+    nameAr: "فيكتوريا سيكريت بومبشيل",
+    brand: "Victoria's Secret",
     category: "women",
     family: "fresh_aquatic",
     occasion: "daily_office",
     season: "summer",
-    price: 540,
-    pointsReward: 54,
-    tag: "Fresh Seduction",
-    tagAr: "انتعاش الفواكه الاستوائية",
-    notes: "Passionfruit, Grapefruit, Pineapple, Peony, Vanilla Orchid",
-    notesAr: "باشن فروت، جريب فروت، أناناس، زهور الفاوانيا، أوركيد",
-    image: "https://images.unsplash.com/photo-1588405748880-12d1d2a59f75?auto=format&fit=crop&w=600&q=80"
+    tagAr: "انتعاش الزهور والفواكه",
+    tagEn: "Fruity Breeze",
+    notesAr: "باشن فروت، جريب فروت، أناناس، زهور الفاوانيا",
+    notesEn: "Passionfruit, Grapefruit, Pineapple, Peony, Orchid",
+    image: "https://images.unsplash.com/photo-1592945403244-b3fbafd7f539?auto=format&fit=crop&w=600&q=80",
+    prices: { "30ml": 320, "50ml": 480, "100ml": 690, "tester": 160 }
   }
 ];
 
-// نصوص الواجهة بكلتا اللغتين
-const DICTIONARY = {
-  ar: {
-    brandSubtitle: "للعطور الفاخرة",
-    shop: "المتجر",
-    quiz: "مستكشف العطور",
-    myPoints: "نقاطي",
-    admin: "لوحة الإدارة",
-    cart: "سلة الطلبات",
-    emptyCart: "سلتك فارغة حالياً",
-    subtotal: "الإجمالي قبل الخصم:",
-    pointsDiscount: "خصم النقاط المستبدلة:",
-    earnedPoints: "النقاط المكتسبة من الطلب:",
-    finalDue: "المطلوب للدفع عند الاستلام:",
-    redeemSliderLabel: "استبدال نقاطك لخصم فوري:",
-    availableBalance: "رصيدك المتاح:",
-    points: "نقطة",
-    currency: "ج.م",
-    fullName: "الاسم بالكامل *",
-    phone: "رقم الموبايل (واتساب) *",
-    address: "المحافظة والعنوان بالتفصيل *",
-    whatsappCheckout: "تأكيد الطلب عبر WhatsApp",
-    addToCart: "أضف إلى السلة",
-    heroBadge: "✦ سجّل حسابك واكسب 50 نقطة فورية في محفظتك",
-    heroTitle: "أرقى التوليفات العالمية وأيقونات الثبات والفوحان",
-    heroDesc: "استمتع بتشكيلة فاخرة مستوحاة من أشهر دور العطور في العالم، مع نظام نقاط يخصم لك من كل طلبية ودفع عند الاستلام لكافة المحافظات.",
-    exploreQuizBtn: "ابدأ مستكشف العطور لاكتشاف توقيعك",
-    menSection: "تشكيلة الرجال (الهيبة والفوحان)",
-    womenSection: "تشكيلة النساء (الأنوثة والجاذبية)",
-    allPerfumes: "المجموعة الكاملة",
-    quizTitle: "مستكشف العطور الذكي",
-    quizSubtitle: "أجب عن 4 أسئلة وسنرشح لك العطر المصنوع خصيصاً لذوقك",
-    q1: "1. لمن تبحث عن العطر؟",
-    q1_opt1: "رجالي فخم وجريء",
-    q1_opt2: "نسائي ناعم وساحر",
-    q1_opt3: "يونيسكس (للجنسين)",
-    q2: "2. ما هي المناسبة الأكثر أهمية بالنسبة لك؟",
-    q2_opt1: "خروجات ومناسبات مسائية فخمة",
-    q2_opt2: "سهرات خاصة ومواعيد رومانسية",
-    q2_opt3: "عمل واستخدام يومي متكرر",
-    q3: "3. ما هو الطابع العطري الذي يأسرك؟",
-    q3_opt1: "أخشاب وعود وجلود دافئة",
-    q3_opt2: "حلويات وفانيليا وكراميل دسم (Gourmand)",
-    q3_opt3: "حمضيات وانتعاش مائي وزهور هادئة",
-    q4: "4. في أي وقت أو فصل تفضل ارتدائه؟",
-    q4_opt1: "أجواء شتوية وباردة (يحتاج ثبات ثقيل)",
-    q4_opt2: "أجواء صيفية ومعتدلة (يحتاج انتعاش خفيف)",
-    q4_opt3: "عطر جوكر صالح لكل الفصول",
-    matchFound: "تطابق ممتاز بنسبة 100%!",
-    altMatch: "عطر بديل قد يناسبك أيضاً:",
-    tryAgain: "إعادة الاختبار",
-    loginWithGoogle: "دخول بـ Google",
-    logout: "خروج",
-    welcomePointsMsg: "رصيدك الحالي من النقاط:",
-    orderSuccessMsg: "تم تجهيز الأوردر وفتح محادثة الواتساب!",
-    totalVisitors: "إجمالي الزوار الحقيقيين للمتجر"
-  },
-  en: {
-    brandSubtitle: "LUXURY PERFUMES",
-    shop: "Boutique",
-    quiz: "Scent Finder",
-    myPoints: "My Rewards",
-    admin: "Admin",
-    cart: "Shopping Bag",
-    emptyCart: "Your bag is currently empty",
-    subtotal: "Subtotal:",
-    pointsDiscount: "Loyalty Discount:",
-    earnedPoints: "Points Earned On Order:",
-    finalDue: "Total Payable On Delivery:",
-    redeemSliderLabel: "Redeem Points for Instant Discount:",
-    availableBalance: "Your Balance:",
-    points: "Pts",
-    currency: "EGP",
-    fullName: "Full Name *",
-    phone: "WhatsApp Mobile *",
-    address: "City & Detailed Address *",
-    whatsappCheckout: "Confirm Order via WhatsApp",
-    addToCart: "Add to Bag",
-    heroBadge: "✦ Create your account and get 50 instant welcome points",
-    heroTitle: "World-Class Signatures, Uncompromising Sillage",
-    heroDesc: "Discover rare blends inspired by the world's most prestigious perfume houses. Earn loyalty points on every bottle with Cash on Delivery nationwide.",
-    exploreQuizBtn: "Launch Scent Finder Quiz",
-    menSection: "Gentlemen's Edit (Bold & Magnetic)",
-    womenSection: "Ladies' Collection (Glamour & Radiance)",
-    allPerfumes: "Full Master Collection",
-    quizTitle: "Intelligent Scent Finder",
-    quizSubtitle: "Answer 4 quick questions to discover your ultimate signature match",
-    q1: "1. Who is this fragrance for?",
-    q1_opt1: "Gentlemen (Masculine & Bold)",
-    q1_opt2: "Ladies (Sensual & Chic)",
-    q1_opt3: "Unisex (Gender-Neutral Masterpiece)",
-    q2: "2. Primary Occasion?",
-    q2_opt1: "Formal Evening & Gala Occasions",
-    q2_opt2: "Romantic Evenings & Date Nights",
-    q2_opt3: "Daily Signature & Office Wear",
-    q3: "3. What fragrance profile calls to you?",
-    q3_opt1: "Woods, Rich Oud & Leather",
-    q3_opt2: "Sweet Gourmand, Vanilla & Caramel",
-    q3_opt3: "Fresh Aquatics, Crisp Citrus & Florals",
-    q4: "4. Preferred Season?",
-    q4_opt1: "Winter & Cold Evenings (Rich & Dense)",
-    q4_opt2: "Summer & Warm Sunny Days (Fresh)",
-    q4_opt3: "All-Year Signature Versatility",
-    matchFound: "100% Signature Match Found!",
-    altMatch: "Alternative recommendation you might adore:",
-    tryAgain: "Restart Quiz",
-    loginWithGoogle: "Sign in with Google",
-    logout: "Logout",
-    welcomePointsMsg: "Your current loyalty points balance:",
-    orderSuccessMsg: "Order prepared! Opening WhatsApp conversation...",
-    totalVisitors: "Total Unique Visitors"
-  }
-};
-
 export default function App() {
-  const [lang, setLang] = useState('ar'); // 'ar' or 'en'
-  const [theme, setTheme] = useState('dark'); // 'dark' or 'light'
-  const t = DICTIONARY[lang];
-
+  const [lang, setLang] = useState('ar');
+  const [theme, setTheme] = useState('dark');
   const [session, setSession] = useState(null);
   const [profile, setProfile] = useState(null);
-  const [activeTab, setActiveTab] = useState('shop'); // 'shop', 'quiz', 'rewards', 'admin'
+  const [activeTab, setActiveTab] = useState('shop'); // 'shop', 'orders', 'quiz', 'rewards', 'admin'
+  const [activeGenderSection, setActiveGenderSection] = useState('men'); // 'men' or 'women'
   const [visitorCount, setVisitorCount] = useState(0);
   const [notification, setNotification] = useState('');
 
   // سلة المشتريات
   const [cart, setCart] = useState([]);
   const [isCartOpen, setIsCartOpen] = useState(false);
+  const [selectedSizes, setSelectedSizes] = useState({}); // { [perfumeId]: "50ml" }
   const [pointsToRedeem, setPointsToRedeem] = useState(0);
   const [shippingDetails, setShippingDetails] = useState({ name: '', phone: '', address: '' });
 
-  // اختبار مستكشف العطور
+  // قائمة الطلبات المباشرة
+  const [ordersList, setOrdersList] = useState([]);
+
+  // مستكشف العطور
   const [quizStep, setQuizStep] = useState(0);
   const [quizAnswers, setQuizAnswers] = useState({ gender: '', occasion: '', profile: '', season: '' });
   const [matchedPerfumes, setMatchedPerfumes] = useState({ primary: null, alternative: null });
@@ -557,13 +449,21 @@ export default function App() {
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session);
-      if (session) fetchProfile(session.user.id);
+      if (session) {
+        fetchProfile(session.user.id);
+        fetchOrders(session.user.id);
+      }
     });
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       setSession(session);
-      if (session) fetchProfile(session.user.id);
-      else setProfile(null);
+      if (session) {
+        fetchProfile(session.user.id);
+        fetchOrders(session.user.id);
+      } else {
+        setProfile(null);
+        setOrdersList([]);
+      }
     });
 
     trackVisit();
@@ -591,6 +491,11 @@ export default function App() {
     }
   };
 
+  const fetchOrders = async (userId) => {
+    const { data } = await supabase.from('orders').select('*').eq('user_id', userId).order('created_at', { ascending: false });
+    if (data) setOrdersList(data);
+  };
+
   const handleGoogleLogin = async () => {
     const { error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
@@ -604,21 +509,33 @@ export default function App() {
     showToast(lang === 'ar' ? 'تم تسجيل الخروج بنجاح' : 'Logged out successfully');
   };
 
-  const addToCart = (perfume) => {
-    setCart(prev => {
-      const existing = prev.find(item => item.id === perfume.id);
-      if (existing) {
-        return prev.map(item => item.id === perfume.id ? { ...item, qty: item.qty + 1 } : item);
-      }
-      return [...prev, { ...perfume, qty: 1 }];
-    });
-    setIsCartOpen(true);
-    showToast(lang === 'ar' ? `تمت إضافة ${perfume.nameAr} إلى السلة` : `Added ${perfume.name} to bag`);
+  // التحكم في حجم العطر المختار لكل كارت
+  const handleSizeChange = (perfumeId, size) => {
+    setSelectedSizes(prev => ({ ...prev, [perfumeId]: size }));
   };
 
-  const updateQuantity = (id, delta) => {
+  const getSelectedSize = (perfumeId) => selectedSizes[perfumeId] || "50ml";
+
+  const addToCart = (perfume) => {
+    const size = getSelectedSize(perfume.id);
+    const price = perfume.prices[size];
+    const pointsReward = Math.round(price * 0.1);
+    const cartItemId = `${perfume.id}-${size}`;
+
+    setCart(prev => {
+      const existing = prev.find(item => item.cartItemId === cartItemId);
+      if (existing) {
+        return prev.map(item => item.cartItemId === cartItemId ? { ...item, qty: item.qty + 1 } : item);
+      }
+      return [...prev, { ...perfume, cartItemId, chosenSize: size, price, pointsReward, qty: 1 }];
+    });
+    setIsCartOpen(true);
+    showToast(lang === 'ar' ? `تمت إضافة ${perfume.nameAr} (${size}) للسلة` : `Added ${perfume.name} (${size}) to bag`);
+  };
+
+  const updateQuantity = (cartItemId, delta) => {
     setCart(prev => prev.map(item => {
-      if (item.id === id) {
+      if (item.cartItemId === cartItemId) {
         const newQty = item.qty + delta;
         return newQty > 0 ? { ...item, qty: newQty } : null;
       }
@@ -626,27 +543,29 @@ export default function App() {
     }).filter(Boolean));
   };
 
-  // الحسابات
+  // الحسابات المالية للسلة
   const subtotal = cart.reduce((acc, item) => acc + (item.price * item.qty), 0);
   const potentialPointsEarned = cart.reduce((acc, item) => acc + (item.pointsReward * item.qty), 0);
   const maxRedeemablePoints = profile ? Math.min(profile.points_balance, Math.floor(subtotal / 0.5)) : 0;
   const discountAmount = pointsToRedeem * 0.5;
   const finalTotal = Math.max(0, subtotal - discountAmount);
 
+  // إتمام الطلب وتحديث الحالات (In Progress)
   const handleCheckout = async (e) => {
     e.preventDefault();
-    if (cart.length === 0) return showToast(t.emptyCart);
+    if (cart.length === 0) return showToast(lang === 'ar' ? 'السلة فارغة' : 'Bag is empty');
     if (!shippingDetails.name || !shippingDetails.phone || !shippingDetails.address) {
-      return showToast(lang === 'ar' ? 'يرجى كتابة الاسم ورقم الموبايل والعنوان' : 'Please provide name, phone and address');
+      return showToast(lang === 'ar' ? 'يرجى إكمال الاسم والموبايل والعنوان' : 'Fill all shipping info');
     }
 
+    // 1. تحديث رصيد النقاط
     if (pointsToRedeem > 0 && profile) {
       const updatedBalance = profile.points_balance - pointsToRedeem + potentialPointsEarned;
       await supabase.from('profiles').update({ points_balance: updatedBalance }).eq('id', profile.id);
       await supabase.from('points_ledger').insert([{
         user_id: profile.id,
         amount: -pointsToRedeem,
-        description: `Loyalty points redeemed for discount of ${discountAmount} EGP`
+        description: `استبدال نقاط لطلب الشراء بقيمة ${discountAmount} ج.م`
       }]);
       setProfile(prev => ({ ...prev, points_balance: updatedBalance }));
     } else if (profile) {
@@ -655,7 +574,8 @@ export default function App() {
       setProfile(prev => ({ ...prev, points_balance: updatedBalance }));
     }
 
-    await supabase.from('orders').insert([{
+    // 2. إدخال الأوردر بحالة "قيد التنفيذ" (In Progress) في قاعدة البيانات
+    const orderRecord = {
       user_id: profile?.id || null,
       customer_name: shippingDetails.name,
       customer_phone: shippingDetails.phone,
@@ -664,20 +584,29 @@ export default function App() {
       subtotal: subtotal,
       discount: discountAmount,
       points_used: pointsToRedeem,
-      total: finalTotal
-    }]);
+      total: finalTotal,
+      status: 'قيد التنفيذ'
+    };
 
-    const itemsList = cart.map(i => `- ${lang === 'ar' ? i.nameAr : i.name} (Qty: ${i.qty}) = ${i.price * i.qty} ${t.currency}`).join('\n');
-    const msg = `*Order from EL3NABBE Perfumes | طلب جديد*\n\n` +
-      `*Customer Info:*\n` +
-      `Name: ${shippingDetails.name}\n` +
-      `Phone: ${shippingDetails.phone}\n` +
-      `Address: ${shippingDetails.address}\n\n` +
-      `*Order Details:*\n${itemsList}\n\n` +
-      `Subtotal: ${subtotal} ${t.currency}\n` +
-      (discountAmount > 0 ? `Loyalty Discount: ${discountAmount} ${t.currency} (${pointsToRedeem} Pts)\n` : '') +
-      `*Net Payable on Delivery: ${finalTotal} ${t.currency}*\n` +
-      `Points Added to Account: +${potentialPointsEarned} Pts`;
+    const { data: newOrder } = await supabase.from('orders').insert([orderRecord]).select();
+
+    if (newOrder && newOrder[0]) {
+      setOrdersList(prev => [newOrder[0], ...prev]);
+    }
+
+    // 3. تجهيز رسالة الواتساب
+    const itemsList = cart.map(i => `- ${lang === 'ar' ? i.nameAr : i.name} [الحجم: ${i.chosenSize}] (العدد: ${i.qty}) = ${i.price * i.qty} ج.م`).join('\n');
+    const msg = `*طلب جديد من متجر العنابي للعطور*\n\n` +
+      `*بيانات العميل:*\n` +
+      `الاسم: ${shippingDetails.name}\n` +
+      `الموبايل: ${shippingDetails.phone}\n` +
+      `العنوان: ${shippingDetails.address}\n\n` +
+      `*تفاصيل الطلب:*\n${itemsList}\n\n` +
+      `الإجمالي قبل الخصم: ${subtotal} ج.م\n` +
+      (discountAmount > 0 ? `خصم النقاط: ${discountAmount} ج.م (${pointsToRedeem} نقطة)\n` : '') +
+      `*المطلوب للدفع عند الاستلام: ${finalTotal} ج.م*\n` +
+      `النقاط المكتسبة من الطلب: +${potentialPointsEarned} نقطة\n` +
+      `*حالة الطلب: قيد التنفيذ والمتابعة*`;
 
     const whatsappUrl = `https://api.whatsapp.com/send?phone=${STORE_WHATSAPP_NUMBER}&text=${encodeURIComponent(msg)}`;
     window.open(whatsappUrl, '_blank');
@@ -685,10 +614,10 @@ export default function App() {
     setCart([]);
     setIsCartOpen(false);
     setPointsToRedeem(0);
-    showToast(t.orderSuccessMsg);
+    showToast(lang === 'ar' ? 'تم تحويل الطلب للواتساب وتسجيله بنجاح!' : 'Order submitted & WhatsApp opened!');
   };
 
-  // معالجة خيارات مستكشف العطور وترشيح العطر الأساسي والبديل
+  // معالجة أسئلة مستكشف العطور
   const handleQuizAnswer = (key, value) => {
     const updatedAnswers = { ...quizAnswers, [key]: value };
     setQuizAnswers(updatedAnswers);
@@ -696,14 +625,12 @@ export default function App() {
     if (quizStep < 3) {
       setQuizStep(prev => prev + 1);
     } else {
-      // إيجاد أفضل تطابقين بناءً على المعايير
       let filtered = PERFUMES.filter(p => {
-        if (updatedAnswers.gender === 'men') return p.category === 'men' || p.category === 'unisex';
-        if (updatedAnswers.gender === 'women') return p.category === 'women' || p.category === 'unisex';
+        if (updatedAnswers.gender === 'men') return p.category === 'men';
+        if (updatedAnswers.gender === 'women') return p.category === 'women';
         return true;
       });
 
-      // رصد التشابه في الطابع والمناسبة
       let ranked = [...filtered].sort((a, b) => {
         let scoreA = 0;
         let scoreB = 0;
@@ -731,87 +658,79 @@ export default function App() {
     <div 
       dir={isRtl ? 'rtl' : 'ltr'} 
       className={`min-h-screen font-sans transition-colors duration-300 ${
-        isDark ? 'bg-[#0a0a0c] text-stone-100 selection:bg-amber-500 selection:text-black' : 'bg-[#faf9f6] text-stone-900 selection:bg-amber-400 selection:text-black'
+        isDark ? 'bg-[#09090b] text-stone-100 selection:bg-amber-500 selection:text-black' : 'bg-[#faf9f6] text-stone-900 selection:bg-amber-400 selection:text-black'
       }`}
     >
       {/* Toast Alert */}
       {notification && (
-        <div className="fixed top-5 left-1/2 -translate-x-1/2 z-50 bg-amber-500 text-stone-950 px-6 py-2.5 rounded-full font-bold shadow-2xl flex items-center gap-2 border border-amber-300 animate-bounce">
+        <div className="fixed top-5 left-1/2 -translate-x-1/2 z-50 bg-amber-500 text-stone-950 px-6 py-2.5 rounded-full font-bold shadow-2xl flex items-center gap-2 border border-amber-300">
           <Sparkles className="w-5 h-5" />
           <span>{notification}</span>
         </div>
       )}
 
-      {/* الشريط العلوي للتحكم والتبديل */}
+      {/* الشريط العلوي المتجاوب للموبايل والكمبيوتر */}
       <header className={`border-b sticky top-0 z-40 backdrop-blur-md transition-colors ${
-        isDark ? 'border-stone-800 bg-[#0a0a0c]/85' : 'border-stone-200 bg-white/85 shadow-sm'
+        isDark ? 'border-stone-800 bg-[#09090b]/90' : 'border-stone-200 bg-white/90 shadow-sm'
       }`}>
-        <div className="max-w-7xl mx-auto px-4 h-20 flex items-center justify-between">
-          {/* الشعار */}
-          <div className="flex items-center gap-3 cursor-pointer" onClick={() => setActiveTab('shop')}>
-            <span className="text-2xl md:text-3xl font-black tracking-tight flex items-center gap-1.5">
-              EL3NABBE <span className="text-amber-500 text-xs font-semibold px-2 py-0.5 rounded border border-amber-500/30">{t.brandSubtitle}</span>
+        <div className="max-w-7xl mx-auto px-4 h-16 md:h-20 flex items-center justify-between">
+          <div className="flex items-center gap-2 cursor-pointer" onClick={() => setActiveTab('shop')}>
+            <span className="text-xl md:text-3xl font-black tracking-tight flex items-center gap-1.5">
+              EL3NABBE <span className="text-amber-500 text-[10px] md:text-xs font-semibold px-2 py-0.5 rounded border border-amber-500/30">PERFUMES</span>
             </span>
           </div>
 
-          {/* أزرار التبويبات والمظهر واللغة */}
-          <div className="flex items-center gap-2 md:gap-3">
+          <div className="flex items-center gap-1.5 md:gap-3">
             <button 
               onClick={() => setActiveTab('shop')}
-              className={`px-3 md:px-4 py-2 rounded-xl text-sm font-bold transition ${
-                activeTab === 'shop' 
-                  ? 'bg-amber-500 text-stone-950 shadow-md' 
-                  : (isDark ? 'text-stone-300 hover:text-white' : 'text-stone-600 hover:text-black')
+              className={`px-3 py-1.5 rounded-xl text-xs md:text-sm font-bold transition ${
+                activeTab === 'shop' ? 'bg-amber-500 text-stone-950' : (isDark ? 'text-stone-300 hover:text-white' : 'text-stone-600 hover:text-black')
               }`}
             >
-              {t.shop}
-            </button>
-            <button 
-              onClick={() => { setActiveTab('quiz'); setQuizStep(0); }}
-              className={`px-3 md:px-4 py-2 rounded-xl text-sm font-bold transition flex items-center gap-1.5 ${
-                activeTab === 'quiz' 
-                  ? 'bg-amber-500 text-stone-950 shadow-md' 
-                  : (isDark ? 'text-stone-300 hover:text-white' : 'text-stone-600 hover:text-black')
-              }`}
-            >
-              <Compass className="w-4 h-4" />
-              <span className="hidden sm:inline">{t.quiz}</span>
-            </button>
-            <button 
-              onClick={() => setActiveTab('rewards')}
-              className={`px-3 md:px-4 py-2 rounded-xl text-sm font-bold transition flex items-center gap-1.5 ${
-                activeTab === 'rewards' 
-                  ? 'bg-amber-500 text-stone-950 shadow-md' 
-                  : (isDark ? 'text-stone-300 hover:text-white' : 'text-stone-600 hover:text-black')
-              }`}
-            >
-              <Award className="w-4 h-4" />
-              <span className="hidden sm:inline">{t.myPoints}</span>
-              {profile ? ` (${profile.points_balance})` : ''}
+              {lang === 'ar' ? 'المتجر' : 'Shop'}
             </button>
 
-            {profile?.role === 'admin' && (
-              <button 
-                onClick={() => setActiveTab('admin')}
-                className={`px-3 py-2 rounded-xl text-sm font-bold transition flex items-center gap-1 ${
-                  activeTab === 'admin' ? 'bg-red-600 text-white' : 'text-red-500 hover:bg-stone-800'
-                }`}
-              >
-                <ShieldCheck className="w-4 h-4" />
-                <span className="hidden sm:inline">{t.admin}</span>
-              </button>
-            )}
+            <button 
+              onClick={() => setActiveTab('orders')}
+              className={`px-3 py-1.5 rounded-xl text-xs md:text-sm font-bold transition flex items-center gap-1 ${
+                activeTab === 'orders' ? 'bg-amber-500 text-stone-950' : (isDark ? 'text-stone-300 hover:text-white' : 'text-stone-600 hover:text-black')
+              }`}
+            >
+              <Package className="w-3.5 h-3.5" />
+              <span>{lang === 'ar' ? 'طلباتي' : 'Orders'}</span>
+            </button>
+
+            <button 
+              onClick={() => { setActiveTab('quiz'); setQuizStep(0); }}
+              className={`px-3 py-1.5 rounded-xl text-xs md:text-sm font-bold transition flex items-center gap-1 ${
+                activeTab === 'quiz' ? 'bg-amber-500 text-stone-950' : (isDark ? 'text-stone-300 hover:text-white' : 'text-stone-600 hover:text-black')
+              }`}
+            >
+              <Compass className="w-3.5 h-3.5" />
+              <span className="hidden sm:inline">{lang === 'ar' ? 'المستكشف' : 'Quiz'}</span>
+            </button>
+
+            <button 
+              onClick={() => setActiveTab('rewards')}
+              className={`px-3 py-1.5 rounded-xl text-xs md:text-sm font-bold transition flex items-center gap-1 ${
+                activeTab === 'rewards' ? 'bg-amber-500 text-stone-950' : (isDark ? 'text-stone-300 hover:text-white' : 'text-stone-600 hover:text-black')
+              }`}
+            >
+              <Award className="w-3.5 h-3.5" />
+              <span className="hidden sm:inline">{lang === 'ar' ? 'النقاط' : 'Points'}</span>
+              {profile ? ` (${profile.points_balance})` : ''}
+            </button>
 
             {/* سلة الشراء */}
             <button 
               onClick={() => setIsCartOpen(true)}
-              className={`relative p-2.5 rounded-xl border transition ${
-                isDark ? 'bg-stone-900 border-stone-800 text-amber-400 hover:border-amber-500' : 'bg-stone-100 border-stone-300 text-stone-800 hover:border-stone-400'
+              className={`relative p-2 md:p-2.5 rounded-xl border transition ${
+                isDark ? 'bg-stone-900 border-stone-800 text-amber-400 hover:border-amber-500' : 'bg-stone-100 border-stone-300 text-stone-800'
               }`}
             >
-              <ShoppingBag className="w-5 h-5" />
+              <ShoppingBag className="w-4 h-4 md:w-5 md:h-5" />
               {cart.length > 0 && (
-                <span className="absolute -top-1.5 -right-1.5 bg-amber-500 text-stone-950 text-xs w-5 h-5 rounded-full font-bold flex items-center justify-center">
+                <span className="absolute -top-1.5 -right-1.5 bg-amber-500 text-stone-950 text-[10px] w-4 h-4 md:w-5 md:h-5 rounded-full font-bold flex items-center justify-center">
                   {cart.reduce((a, b) => a + b.qty, 0)}
                 </span>
               )}
@@ -820,10 +739,9 @@ export default function App() {
             {/* تبديل الوضع الليلي / النهاري */}
             <button 
               onClick={() => setTheme(isDark ? 'light' : 'dark')}
-              className={`p-2.5 rounded-xl border transition ${
+              className={`p-2 md:p-2.5 rounded-xl border transition ${
                 isDark ? 'bg-stone-900 border-stone-800 text-amber-400' : 'bg-stone-100 border-stone-300 text-stone-700'
               }`}
-              title="Toggle Theme"
             >
               {isDark ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
             </button>
@@ -831,42 +749,43 @@ export default function App() {
             {/* تبديل اللغة */}
             <button 
               onClick={() => setLang(lang === 'ar' ? 'en' : 'ar')}
-              className={`px-3 py-2 rounded-xl text-xs font-bold border transition flex items-center gap-1 ${
+              className={`px-2 md:px-3 py-1.5 rounded-xl text-[11px] md:text-xs font-bold border transition ${
                 isDark ? 'bg-stone-900 border-stone-800 text-stone-200' : 'bg-stone-100 border-stone-300 text-stone-800'
               }`}
             >
-              <Globe className="w-3.5 h-3.5" />
-              <span>{lang === 'ar' ? 'English' : 'عربي'}</span>
+              {lang === 'ar' ? 'EN' : 'عربي'}
             </button>
 
-            {/* Google Login / Logout */}
             {session ? (
-              <button onClick={handleLogout} className="p-2.5 rounded-xl bg-red-500/10 border border-red-500/30 text-red-500 hover:bg-red-500 hover:text-white transition">
+              <button onClick={handleLogout} className="p-2 rounded-xl text-red-500 hover:bg-red-500/10 transition">
                 <LogOut className="w-4 h-4" />
               </button>
             ) : (
               <button 
                 onClick={handleGoogleLogin} 
-                className="hidden lg:flex items-center gap-2 px-3 py-2 rounded-xl bg-white text-stone-950 font-bold text-xs border border-stone-300 shadow hover:bg-stone-100 transition"
+                className="hidden md:flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white text-stone-950 font-bold text-xs border border-stone-300 shadow"
               >
-                <span>{t.loginWithGoogle}</span>
+                <span>Google</span>
               </button>
             )}
           </div>
         </div>
       </header>
 
-      {/* سلة الشراء المنبثقة */}
+      {/* سلة الشراء الجانبية */}
       {isCartOpen && (
         <div className="fixed inset-0 z-50 flex justify-end bg-black/60 backdrop-blur-sm">
-          <div className={`w-full max-w-md border-r h-full flex flex-col justify-between p-6 overflow-y-auto transition-colors ${
-            isDark ? 'bg-[#0f0f13] border-stone-800 text-stone-100' : 'bg-white border-stone-200 text-stone-900 shadow-2xl'
+          <div className={`w-full max-w-md border-r h-full flex flex-col justify-between p-5 md:p-6 overflow-y-auto ${
+            isDark ? 'bg-[#0f0f13] border-stone-800 text-stone-100' : 'bg-white border-stone-200 text-stone-900'
           }`}>
             <div>
               <div className="flex justify-between items-center border-b pb-4 mb-4 border-stone-700/50">
                 <div className="flex items-center gap-2">
                   <ShoppingBag className="w-5 h-5 text-amber-500" />
-                  <h3 className="font-bold text-lg">{t.cart}</h3>
+                  <h3 className="font-bold text-base md:text-lg">{lang === 'ar' ? 'سلة الطلبات' : 'Cart'}</h3>
+                  <span className="text-[10px] bg-amber-500/10 text-amber-500 px-2 py-0.5 rounded-full font-bold">
+                    {lang === 'ar' ? 'معلق (Pending)' : 'Pending'}
+                  </span>
                 </div>
                 <button onClick={() => setIsCartOpen(false)} className="p-1 hover:opacity-75">
                   <X className="w-6 h-6" />
@@ -876,27 +795,30 @@ export default function App() {
               {cart.length === 0 ? (
                 <div className="text-center py-16 text-stone-400 space-y-3">
                   <ShoppingBag className="w-12 h-12 mx-auto stroke-1" />
-                  <p>{t.emptyCart}</p>
+                  <p>{lang === 'ar' ? 'سلتك فارغة حالياً' : 'Your bag is empty'}</p>
                 </div>
               ) : (
                 <div className="space-y-4 mb-6">
                   {cart.map((item) => (
-                    <div key={item.id} className={`flex items-center justify-between p-3.5 rounded-2xl border ${
+                    <div key={item.cartItemId} className={`flex items-center justify-between p-3.5 rounded-2xl border ${
                       isDark ? 'bg-stone-950/80 border-stone-800' : 'bg-stone-50 border-stone-200'
                     }`}>
                       <div className="flex items-center gap-3">
                         <img src={item.image} alt={item.name} className="w-14 h-14 object-cover rounded-xl border border-stone-800" />
                         <div>
                           <h4 className="font-bold text-sm">{isRtl ? item.nameAr : item.name}</h4>
-                          <span className="text-xs text-amber-500 font-bold">{item.price} {t.currency}</span>
+                          <div className="flex items-center gap-2 text-xs">
+                            <span className="text-amber-500 font-bold">{item.price} ج.م</span>
+                            <span className="text-stone-400 bg-stone-800 px-1.5 py-0.2 rounded text-[10px]">{item.chosenSize}</span>
+                          </div>
                         </div>
                       </div>
                       <div className="flex items-center gap-2">
-                        <button onClick={() => updateQuantity(item.id, -1)} className="p-1.5 rounded-lg bg-stone-800 text-white hover:bg-stone-700">
+                        <button onClick={() => updateQuantity(item.cartItemId, -1)} className="p-1.5 rounded-lg bg-stone-800 text-white">
                           <Minus className="w-3.5 h-3.5" />
                         </button>
                         <span className="font-bold text-sm px-1">{item.qty}</span>
-                        <button onClick={() => updateQuantity(item.id, 1)} className="p-1.5 rounded-lg bg-stone-800 text-white hover:bg-stone-700">
+                        <button onClick={() => updateQuantity(item.cartItemId, 1)} className="p-1.5 rounded-lg bg-stone-800 text-white">
                           <Plus className="w-3.5 h-3.5" />
                         </button>
                       </div>
@@ -907,8 +829,8 @@ export default function App() {
                   {profile && profile.points_balance > 0 && (
                     <div className="bg-amber-500/10 border border-amber-500/30 p-4 rounded-2xl space-y-2">
                       <div className="flex justify-between text-xs">
-                        <span className="font-semibold text-amber-500">{t.redeemSliderLabel}</span>
-                        <span className="font-bold">{pointsToRedeem} {t.points} = {discountAmount} {t.currency}</span>
+                        <span className="font-semibold text-amber-500">{lang === 'ar' ? 'استبدال النقاط لخصم:' : 'Redeem Points:'}</span>
+                        <span className="font-bold">{pointsToRedeem} نقطة = {discountAmount} ج.م</span>
                       </div>
                       <input 
                         type="range" 
@@ -919,41 +841,41 @@ export default function App() {
                         onChange={(e) => setPointsToRedeem(Number(e.target.value))}
                         className="w-full accent-amber-500 cursor-pointer"
                       />
-                      <span className="text-[11px] text-stone-400 block">{t.availableBalance} {profile.points_balance} {t.points}</span>
+                      <span className="text-[11px] text-stone-400 block">{lang === 'ar' ? 'رصيدك المتاح:' : 'Balance:'} {profile.points_balance} نقطة</span>
                     </div>
                   )}
 
                   {/* ملخص المبالغ */}
                   <div className="border-t border-stone-700/50 pt-3 space-y-2 text-xs">
                     <div className="flex justify-between text-stone-400">
-                      <span>{t.subtotal}</span>
-                      <span>{subtotal} {t.currency}</span>
+                      <span>{lang === 'ar' ? 'الإجمالي قبل الخصم:' : 'Subtotal:'}</span>
+                      <span>{subtotal} ج.م</span>
                     </div>
                     {discountAmount > 0 && (
                       <div className="flex justify-between text-emerald-500 font-semibold">
-                        <span>{t.pointsDiscount}</span>
-                        <span>-{discountAmount} {t.currency}</span>
+                        <span>{lang === 'ar' ? 'خصم النقاط:' : 'Discount:'}</span>
+                        <span>-{discountAmount} ج.م</span>
                       </div>
                     )}
                     <div className="flex justify-between text-stone-400">
-                      <span>{t.earnedPoints}</span>
-                      <span className="text-amber-500 font-bold">+{potentialPointsEarned} {t.points}</span>
+                      <span>{lang === 'ar' ? 'النقاط المكتسبة:' : 'Points Earned:'}</span>
+                      <span className="text-amber-500 font-bold">+{potentialPointsEarned} نقطة</span>
                     </div>
                     <div className="flex justify-between text-base font-extrabold pt-2 border-t border-stone-700/50">
-                      <span>{t.finalDue}</span>
-                      <span className="text-amber-500">{finalTotal} {t.currency}</span>
+                      <span>{lang === 'ar' ? 'المطلوب للدفع عند الاستلام:' : 'Total:'}</span>
+                      <span className="text-amber-500">{finalTotal} ج.م</span>
                     </div>
                   </div>
                 </div>
               )}
             </div>
 
-            {/* تفاصيل العميل وزر الواتساب */}
+            {/* نموذج تفاصيل الشحن والتأكيد */}
             {cart.length > 0 && (
               <form onSubmit={handleCheckout} className="border-t border-stone-700/50 pt-4 space-y-3">
                 <input 
                   type="text" 
-                  placeholder={t.fullName}
+                  placeholder={lang === 'ar' ? 'الاسم بالكامل *' : 'Full Name *'}
                   required
                   value={shippingDetails.name}
                   onChange={(e) => setShippingDetails({ ...shippingDetails, name: e.target.value })}
@@ -963,7 +885,7 @@ export default function App() {
                 />
                 <input 
                   type="tel" 
-                  placeholder={t.phone}
+                  placeholder={lang === 'ar' ? 'رقم الموبايل (واتساب) *' : 'Phone *'}
                   required
                   value={shippingDetails.phone}
                   onChange={(e) => setShippingDetails({ ...shippingDetails, phone: e.target.value })}
@@ -972,7 +894,7 @@ export default function App() {
                   }`}
                 />
                 <textarea 
-                  placeholder={t.address}
+                  placeholder={lang === 'ar' ? 'المحافظة والعنوان بالتفصيل *' : 'Address *'}
                   required
                   rows="2"
                   value={shippingDetails.address}
@@ -983,10 +905,10 @@ export default function App() {
                 />
                 <button 
                   type="submit"
-                  className="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3.5 rounded-xl transition flex items-center justify-center gap-2 shadow-lg"
+                  className="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3.5 rounded-xl transition flex items-center justify-center gap-2 shadow-lg text-sm"
                 >
                   <Send className="w-4 h-4" />
-                  <span>{t.whatsappCheckout}</span>
+                  <span>{lang === 'ar' ? 'تأكيد الطلب وتفعيل المتابعة' : 'Submit & Track'}</span>
                 </button>
               </form>
             )}
@@ -995,303 +917,299 @@ export default function App() {
       )}
 
       {/* المحتوى الرئيسي */}
-      <main className="max-w-7xl mx-auto px-4 py-8">
-        {/* صفحة المتجر وسلايدرات الرجال والنساء */}
+      <main className="max-w-7xl mx-auto px-4 py-6 md:py-10">
         {activeTab === 'shop' && (
-          <div className="space-y-12">
-            {/* البانر الترحيبي الفخم */}
-            <div className={`rounded-3xl border p-8 md:p-14 relative overflow-hidden ${
-              isDark 
-                ? 'border-stone-800 bg-gradient-to-r from-stone-900 via-[#181113] to-stone-900' 
-                : 'border-stone-200 bg-gradient-to-r from-stone-100 via-amber-50 to-stone-100'
-            }`}>
-              <div className="max-w-2xl relative z-10">
-                <span className="inline-block bg-amber-500/10 text-amber-500 border border-amber-500/30 text-xs px-3.5 py-1.5 rounded-full font-bold mb-4">
-                  {t.heroBadge}
-                </span>
-                <h1 className="text-3xl md:text-5xl font-black leading-tight mb-4">
-                  {t.heroTitle}
-                </h1>
-                <p className="text-stone-400 text-sm leading-relaxed mb-6">
-                  {t.heroDesc}
-                </p>
-                <button 
-                  onClick={() => { setActiveTab('quiz'); setQuizStep(0); }}
-                  className="bg-amber-500 hover:bg-amber-400 text-stone-950 font-extrabold px-6 py-3.5 rounded-2xl transition flex items-center gap-2 text-sm shadow-xl"
-                >
-                  <Compass className="w-4 h-4" />
-                  <span>{t.exploreQuizBtn}</span>
-                </button>
-              </div>
+          <div className="space-y-8">
+            {/* أزرار التبديل الرئيسية للأقسام: رجالي / حريمي (مناسبة جداً للموبايل) */}
+            <div className="flex rounded-2xl p-1.5 max-w-md mx-auto border border-stone-800 bg-stone-900/60">
+              <button 
+                onClick={() => setActiveGenderSection('men')}
+                className={`flex-1 py-3 rounded-xl font-black text-sm md:text-base flex items-center justify-center gap-2 transition ${
+                  activeGenderSection === 'men' ? 'bg-amber-500 text-stone-950 shadow-lg' : 'text-stone-400 hover:text-white'
+                }`}
+              >
+                <Flame className="w-4 h-4" />
+                <span>{lang === 'ar' ? 'قسم الرجال (Men)' : "Men's Section"}</span>
+              </button>
+
+              <button 
+                onClick={() => setActiveGenderSection('women')}
+                className={`flex-1 py-3 rounded-xl font-black text-sm md:text-base flex items-center justify-center gap-2 transition ${
+                  activeGenderSection === 'women' ? 'bg-amber-500 text-stone-950 shadow-lg' : 'text-stone-400 hover:text-white'
+                }`}
+              >
+                <Sparkles className="w-4 h-4" />
+                <span>{lang === 'ar' ? 'قسم النساء (Women)' : "Women's Section"}</span>
+              </button>
             </div>
 
-            {/* سلايدر قسم الرجال */}
-            <div>
-              <div className="flex items-center justify-between mb-4">
-                <h2 className="text-xl md:text-2xl font-black flex items-center gap-2">
-                  <Flame className="w-5 h-5 text-amber-500" />
-                  <span>{t.menSection}</span>
-                </h2>
-              </div>
-              <div className="flex gap-5 overflow-x-auto pb-4 scrollbar-thin snap-x">
-                {PERFUMES.filter(p => p.category === 'men' || p.category === 'unisex').map(perfume => (
+            {/* شبكة العطور الخاصة بالقسم المختار متجاوبة 100% مع الموبايل */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
+              {PERFUMES.filter(p => p.category === activeGenderSection).map((perfume) => {
+                const currentSize = getSelectedSize(perfume.id);
+                const currentPrice = perfume.prices[currentSize];
+                const points = Math.round(currentPrice * 0.1);
+
+                return (
                   <div 
                     key={perfume.id} 
-                    className={`min-w-[260px] md:min-w-[280px] snap-start rounded-3xl border overflow-hidden flex flex-col justify-between transition-transform duration-300 hover:-translate-y-1 ${
-                      isDark ? 'bg-stone-900/60 border-stone-800' : 'bg-white border-stone-200 shadow-md'
+                    className={`rounded-3xl border overflow-hidden flex flex-col justify-between transition-all duration-300 hover:border-amber-500/60 ${
+                      isDark ? 'bg-stone-900/70 border-stone-800' : 'bg-white border-stone-200 shadow-md'
                     }`}
                   >
-                    <div className="relative h-60 overflow-hidden">
-                      <img src={perfume.image} alt={perfume.name} className="w-full h-full object-cover" />
-                      <span className="absolute top-3 right-3 bg-black/75 backdrop-blur-md text-amber-400 text-[11px] px-2.5 py-1 rounded-lg border border-stone-700">
-                        {isRtl ? perfume.tagAr : perfume.tag}
+                    {/* صورة الزجاجة النقية */}
+                    <div className="relative h-64 md:h-60 overflow-hidden bg-stone-950">
+                      <img 
+                        src={perfume.image} 
+                        alt={perfume.name} 
+                        className="w-full h-full object-cover hover:scale-105 transition duration-500" 
+                      />
+                      <span className="absolute top-3 right-3 bg-black/80 backdrop-blur-md text-amber-400 text-[10px] px-2.5 py-1 rounded-lg border border-stone-700 font-bold">
+                        {isRtl ? perfume.tagAr : perfume.tagEn}
+                      </span>
+                      <span className="absolute bottom-3 left-3 bg-stone-950/90 text-stone-300 text-[10px] px-2 py-0.5 rounded border border-stone-800">
+                        {perfume.brand}
                       </span>
                     </div>
-                    <div className="p-5 flex-1 flex flex-col justify-between">
+
+                    {/* بيانات وتفاصيل العطر */}
+                    <div className="p-4 md:p-5 flex-1 flex flex-col justify-between space-y-3">
                       <div>
-                        <h3 className="font-bold text-base mb-1">{isRtl ? perfume.nameAr : perfume.name}</h3>
-                        <p className="text-stone-400 text-xs mb-3 line-clamp-2">{isRtl ? perfume.notesAr : perfume.notes}</p>
+                        <h3 className="font-black text-base md:text-lg mb-1">{isRtl ? perfume.nameAr : perfume.name}</h3>
+                        <p className="text-stone-400 text-xs line-clamp-2">{isRtl ? perfume.notesAr : perfume.notesEn}</p>
                       </div>
+
+                      {/* اختيار الأحجام (30ML / 50ML / 100ML / Tester) */}
                       <div>
-                        <div className="flex items-center justify-between border-t border-stone-700/40 pt-3 mb-3">
-                          <span className="text-lg font-black text-amber-500">{perfume.price} {t.currency}</span>
-                          <span className="text-xs bg-amber-500/10 text-amber-500 font-bold px-2 py-0.5 rounded">+{perfume.pointsReward} {t.points}</span>
+                        <span className="text-[11px] font-bold text-stone-400 block mb-1.5">
+                          {lang === 'ar' ? 'اختر الحجم:' : 'Select Size:'}
+                        </span>
+                        <div className="grid grid-cols-4 gap-1 text-[11px] font-bold">
+                          {["30ml", "50ml", "100ml", "tester"].map((sz) => (
+                            <button
+                              key={sz}
+                              onClick={() => handleSizeChange(perfume.id, sz)}
+                              className={`py-1.5 rounded-lg border text-center transition ${
+                                currentSize === sz 
+                                  ? 'bg-amber-500 text-stone-950 border-amber-500' 
+                                  : (isDark ? 'bg-stone-950 border-stone-800 text-stone-300 hover:border-stone-700' : 'bg-stone-100 border-stone-300 text-stone-700')
+                              }`}
+                            >
+                              {sz === 'tester' ? (lang === 'ar' ? 'عينة' : 'Test') : sz}
+                            </button>
+                          ))}
                         </div>
+                      </div>
+
+                      {/* السعر والنقاط وزر الإضافة */}
+                      <div className="border-t border-stone-700/40 pt-3">
+                        <div className="flex items-center justify-between mb-3">
+                          <div>
+                            <span className="text-lg md:text-xl font-black text-amber-500">{currentPrice}</span>
+                            <span className="text-xs text-stone-400 mr-1">ج.م</span>
+                          </div>
+                          <span className="text-[11px] bg-amber-500/10 text-amber-500 font-bold px-2 py-0.5 rounded border border-amber-500/20">
+                            +{points} نقطة
+                          </span>
+                        </div>
+
                         <button 
                           onClick={() => addToCart(perfume)}
-                          className="w-full bg-amber-500 hover:bg-amber-400 text-stone-950 font-bold py-2.5 rounded-xl transition text-xs flex items-center justify-center gap-1.5"
+                          className="w-full bg-stone-800 hover:bg-amber-500 hover:text-stone-950 text-white font-bold py-2.5 rounded-xl transition text-xs flex items-center justify-center gap-1.5 shadow"
                         >
                           <ShoppingBag className="w-4 h-4" />
-                          <span>{t.addToCart}</span>
+                          <span>{lang === 'ar' ? 'أضف للسلة' : 'Add to Bag'}</span>
                         </button>
                       </div>
                     </div>
                   </div>
-                ))}
-              </div>
-            </div>
-
-            {/* سلايدر قسم النساء */}
-            <div>
-              <div className="flex items-center justify-between mb-4">
-                <h2 className="text-xl md:text-2xl font-black flex items-center gap-2">
-                  <Sparkles className="w-5 h-5 text-amber-500" />
-                  <span>{t.womenSection}</span>
-                </h2>
-              </div>
-              <div className="flex gap-5 overflow-x-auto pb-4 scrollbar-thin snap-x">
-                {PERFUMES.filter(p => p.category === 'women' || p.category === 'unisex').map(perfume => (
-                  <div 
-                    key={perfume.id} 
-                    className={`min-w-[260px] md:min-w-[280px] snap-start rounded-3xl border overflow-hidden flex flex-col justify-between transition-transform duration-300 hover:-translate-y-1 ${
-                      isDark ? 'bg-stone-900/60 border-stone-800' : 'bg-white border-stone-200 shadow-md'
-                    }`}
-                  >
-                    <div className="relative h-60 overflow-hidden">
-                      <img src={perfume.image} alt={perfume.name} className="w-full h-full object-cover" />
-                      <span className="absolute top-3 right-3 bg-black/75 backdrop-blur-md text-pink-400 text-[11px] px-2.5 py-1 rounded-lg border border-stone-700">
-                        {isRtl ? perfume.tagAr : perfume.tag}
-                      </span>
-                    </div>
-                    <div className="p-5 flex-1 flex flex-col justify-between">
-                      <div>
-                        <h3 className="font-bold text-base mb-1">{isRtl ? perfume.nameAr : perfume.name}</h3>
-                        <p className="text-stone-400 text-xs mb-3 line-clamp-2">{isRtl ? perfume.notesAr : perfume.notes}</p>
-                      </div>
-                      <div>
-                        <div className="flex items-center justify-between border-t border-stone-700/40 pt-3 mb-3">
-                          <span className="text-lg font-black text-amber-500">{perfume.price} {t.currency}</span>
-                          <span className="text-xs bg-amber-500/10 text-amber-500 font-bold px-2 py-0.5 rounded">+{perfume.pointsReward} {t.points}</span>
-                        </div>
-                        <button 
-                          onClick={() => addToCart(perfume)}
-                          className="w-full bg-amber-500 hover:bg-amber-400 text-stone-950 font-bold py-2.5 rounded-xl transition text-xs flex items-center justify-center gap-1.5"
-                        >
-                          <ShoppingBag className="w-4 h-4" />
-                          <span>{t.addToCart}</span>
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* الكتالوج الكامل */}
-            <div>
-              <h2 className="text-xl md:text-2xl font-black mb-6">{t.allPerfumes}</h2>
-              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-                {PERFUMES.map(perfume => (
-                  <div 
-                    key={perfume.id} 
-                    className={`rounded-3xl border overflow-hidden flex flex-col justify-between ${
-                      isDark ? 'bg-stone-900/60 border-stone-800' : 'bg-white border-stone-200 shadow-md'
-                    }`}
-                  >
-                    <div className="relative h-56 overflow-hidden">
-                      <img src={perfume.image} alt={perfume.name} className="w-full h-full object-cover" />
-                      <span className="absolute top-3 right-3 bg-black/75 backdrop-blur-md text-amber-400 text-[10px] px-2 py-0.5 rounded border border-stone-700">
-                        {isRtl ? perfume.tagAr : perfume.tag}
-                      </span>
-                    </div>
-                    <div className="p-4 flex-1 flex flex-col justify-between">
-                      <div>
-                        <h3 className="font-bold text-sm mb-1">{isRtl ? perfume.nameAr : perfume.name}</h3>
-                        <p className="text-stone-400 text-[11px] mb-3">{isRtl ? perfume.notesAr : perfume.notes}</p>
-                      </div>
-                      <div>
-                        <div className="flex items-center justify-between border-t border-stone-700/30 pt-2 mb-3">
-                          <span className="text-base font-black text-amber-500">{perfume.price} {t.currency}</span>
-                          <span className="text-[11px] bg-amber-500/10 text-amber-500 px-1.5 py-0.5 rounded font-bold">+{perfume.pointsReward} Pts</span>
-                        </div>
-                        <button 
-                          onClick={() => addToCart(perfume)}
-                          className="w-full bg-stone-800 hover:bg-amber-500 hover:text-stone-950 text-white font-bold py-2 rounded-xl transition text-xs flex items-center justify-center gap-1"
-                        >
-                          <ShoppingBag className="w-3.5 h-3.5" />
-                          <span>{t.addToCart}</span>
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
+                );
+              })}
             </div>
           </div>
         )}
 
-        {/* مستكشف العطور متعدد المراحل مع إظهار الخيار البديل */}
+        {/* صفحة تتبع الطلبات (Order Tracking & Status) */}
+        {activeTab === 'orders' && (
+          <div className="max-w-3xl mx-auto space-y-6">
+            <div className="flex items-center justify-between border-b border-stone-700/40 pb-4">
+              <div className="flex items-center gap-2">
+                <Package className="w-6 h-6 text-amber-500" />
+                <h2 className="text-xl md:text-2xl font-black">{lang === 'ar' ? 'سجل متابعة الطلبات' : 'Order Tracking'}</h2>
+              </div>
+            </div>
+
+            {/* حالة الطلبات المعلقة في السلة حالياً */}
+            {cart.length > 0 && (
+              <div className={`p-4 md:p-5 rounded-2xl border flex items-center justify-between ${
+                isDark ? 'bg-amber-500/10 border-amber-500/30' : 'bg-amber-50 border-amber-200'
+              }`}>
+                <div className="flex items-center gap-3">
+                  <Clock className="w-5 h-5 text-amber-500" />
+                  <div>
+                    <h4 className="font-bold text-sm">{lang === 'ar' ? 'طلبك الحالي في السلة' : 'Pending in Cart'}</h4>
+                    <span className="text-xs text-stone-400">{cart.length} منتجات بانتظار الإرسال</span>
+                  </div>
+                </div>
+                <span className="text-xs font-bold px-3 py-1 bg-amber-500 text-stone-950 rounded-full">
+                  معلق (Pending)
+                </span>
+              </div>
+            )}
+
+            {/* قائمة الطلبات التي تم إرسالها (In Progress) */}
+            {ordersList.length === 0 && cart.length === 0 ? (
+              <div className="text-center py-16 text-stone-400 space-y-3">
+                <Clock className="w-12 h-12 mx-auto stroke-1" />
+                <p>{lang === 'ar' ? 'لا توجد طلبات سابقة مسجلة حتى الآن' : 'No past orders yet'}</p>
+              </div>
+            ) : (
+              <div className="space-y-4">
+                {ordersList.map((order) => (
+                  <div key={order.id} className={`p-5 rounded-2xl border space-y-3 ${
+                    isDark ? 'bg-stone-900/60 border-stone-800' : 'bg-white border-stone-200 shadow'
+                  }`}>
+                    <div className="flex justify-between items-center border-b border-stone-800 pb-3">
+                      <div>
+                        <span className="text-xs text-stone-400 block">{new Date(order.created_at).toLocaleDateString(lang === 'ar' ? 'ar-EG' : 'en-US')}</span>
+                        <span className="text-sm font-bold text-amber-500">{order.total} ج.م</span>
+                      </div>
+                      <span className="text-xs font-bold px-3 py-1 rounded-full bg-blue-500/10 border border-blue-500/30 text-blue-400 flex items-center gap-1.5">
+                        <CheckCircle2 className="w-3.5 h-3.5" />
+                        <span>{order.status || 'قيد التنفيذ (In Progress)'}</span>
+                      </span>
+                    </div>
+
+                    <div className="text-xs text-stone-300 space-y-1">
+                      {order.items?.map((item, idx) => (
+                        <div key={idx} className="flex justify-between">
+                          <span>• {item.nameAr || item.name} ({item.chosenSize || '50ml'}) x {item.qty}</span>
+                          <span className="text-stone-400">{item.price * item.qty} ج.م</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* مستكشف العطور الذكي متعدد المعايير مع البديل */}
         {activeTab === 'quiz' && (
-          <div className={`max-w-2xl mx-auto rounded-3xl border p-8 md:p-12 text-center space-y-6 ${
+          <div className={`max-w-xl mx-auto rounded-3xl border p-6 md:p-10 text-center space-y-6 ${
             isDark ? 'bg-stone-900/70 border-stone-800' : 'bg-white border-stone-200 shadow-xl'
           }`}>
             {quizStep < 4 && (
               <div>
-                <Compass className="w-12 h-12 text-amber-500 mx-auto mb-2 animate-spin-slow" />
-                <h2 className="text-2xl font-black">{t.quizTitle}</h2>
-                <p className="text-stone-400 text-xs mt-1">{t.quizSubtitle}</p>
+                <Compass className="w-10 h-10 text-amber-500 mx-auto mb-2" />
+                <h2 className="text-xl md:text-2xl font-black">{lang === 'ar' ? 'مستكشف العطور الذكي' : 'Smart Scent Finder'}</h2>
+                <p className="text-stone-400 text-xs mt-1">{lang === 'ar' ? 'أجب عن 4 أسئلة وسنرشح لك العطر الأنسب مع خيار بديل' : 'Answer 4 questions for primary & alternate matches'}</p>
               </div>
             )}
 
-            {/* السؤال الأول: الجنس */}
             {quizStep === 0 && (
-              <div className="space-y-4 text-start">
-                <h3 className="text-lg font-bold text-center">{t.q1}</h3>
-                <div className="grid grid-cols-1 gap-3">
-                  <button onClick={() => handleQuizAnswer('gender', 'men')} className="p-4 rounded-2xl border text-sm font-semibold hover:border-amber-500 transition bg-stone-950/40">
-                    🎩 {t.q1_opt1}
-                  </button>
-                  <button onClick={() => handleQuizAnswer('gender', 'women')} className="p-4 rounded-2xl border text-sm font-semibold hover:border-amber-500 transition bg-stone-950/40">
-                    👠 {t.q1_opt2}
-                  </button>
-                  <button onClick={() => handleQuizAnswer('gender', 'unisex')} className="p-4 rounded-2xl border text-sm font-semibold hover:border-amber-500 transition bg-stone-950/40">
-                    👑 {t.q1_opt3}
-                  </button>
-                </div>
+              <div className="space-y-3 text-start">
+                <h3 className="text-sm md:text-base font-bold text-center">{lang === 'ar' ? '1. تبحث عن عطر لمن؟' : '1. Who is it for?'}</h3>
+                <button onClick={() => handleQuizAnswer('gender', 'men')} className="w-full p-3.5 rounded-2xl border text-sm font-semibold hover:border-amber-500 transition bg-stone-950/40">
+                  🎩 {lang === 'ar' ? 'رجالي (فخم وجريء)' : 'Gentlemen'}
+                </button>
+                <button onClick={() => handleQuizAnswer('gender', 'women')} className="w-full p-3.5 rounded-2xl border text-sm font-semibold hover:border-amber-500 transition bg-stone-950/40">
+                  👠 {lang === 'ar' ? 'نسائي (ناعم وساحر)' : 'Ladies'}
+                </button>
               </div>
             )}
 
-            {/* السؤال الثاني: المناسبة */}
             {quizStep === 1 && (
-              <div className="space-y-4 text-start">
-                <h3 className="text-lg font-bold text-center">{t.q2}</h3>
-                <div className="grid grid-cols-1 gap-3">
-                  <button onClick={() => handleQuizAnswer('occasion', 'luxury')} className="p-4 rounded-2xl border text-sm font-semibold hover:border-amber-500 transition bg-stone-950/40">
-                    ✨ {t.q2_opt1}
-                  </button>
-                  <button onClick={() => handleQuizAnswer('occasion', 'dating')} className="p-4 rounded-2xl border text-sm font-semibold hover:border-amber-500 transition bg-stone-950/40">
-                    🕯️ {t.q2_opt2}
-                  </button>
-                  <button onClick={() => handleQuizAnswer('occasion', 'daily_office')} className="p-4 rounded-2xl border text-sm font-semibold hover:border-amber-500 transition bg-stone-950/40">
-                    💼 {t.q2_opt3}
-                  </button>
-                </div>
+              <div className="space-y-3 text-start">
+                <h3 className="text-sm md:text-base font-bold text-center">{lang === 'ar' ? '2. المناسبة الأساسية؟' : '2. Primary Occasion?'}</h3>
+                <button onClick={() => handleQuizAnswer('occasion', 'luxury')} className="w-full p-3.5 rounded-2xl border text-sm font-semibold hover:border-amber-500 transition bg-stone-950/40">
+                  ✨ {lang === 'ar' ? 'مناسبات رسمية وفخمة' : 'Formal Luxury'}
+                </button>
+                <button onClick={() => handleQuizAnswer('occasion', 'dating')} className="w-full p-3.5 rounded-2xl border text-sm font-semibold hover:border-amber-500 transition bg-stone-950/40">
+                  🕯️ {lang === 'ar' ? 'سهرات ومواعيد خاصة' : 'Date Nights'}
+                </button>
+                <button onClick={() => handleQuizAnswer('occasion', 'daily_office')} className="w-full p-3.5 rounded-2xl border text-sm font-semibold hover:border-amber-500 transition bg-stone-950/40">
+                  💼 {lang === 'ar' ? 'عمل واستخدام يومي متكرر' : 'Daily & Office'}
+                </button>
               </div>
             )}
 
-            {/* السؤال الثالث: الطابع العطري */}
             {quizStep === 2 && (
-              <div className="space-y-4 text-start">
-                <h3 className="text-lg font-bold text-center">{t.q3}</h3>
-                <div className="grid grid-cols-1 gap-3">
-                  <button onClick={() => handleQuizAnswer('profile', 'oriental')} className="p-4 rounded-2xl border text-sm font-semibold hover:border-amber-500 transition bg-stone-950/40">
-                    🪵 {t.q3_opt1}
-                  </button>
-                  <button onClick={() => handleQuizAnswer('profile', 'sweet')} className="p-4 rounded-2xl border text-sm font-semibold hover:border-amber-500 transition bg-stone-950/40">
-                    🍫 {t.q3_opt2}
-                  </button>
-                  <button onClick={() => handleQuizAnswer('profile', 'fresh')} className="p-4 rounded-2xl border text-sm font-semibold hover:border-amber-500 transition bg-stone-950/40">
-                    🍋 {t.q3_opt3}
-                  </button>
-                </div>
+              <div className="space-y-3 text-start">
+                <h3 className="text-sm md:text-base font-bold text-center">{lang === 'ar' ? '3. الطابع العطري المفضل؟' : '3. Scent Family?'}</h3>
+                <button onClick={() => handleQuizAnswer('profile', 'oriental')} className="w-full p-3.5 rounded-2xl border text-sm font-semibold hover:border-amber-500 transition bg-stone-950/40">
+                  🪵 {lang === 'ar' ? 'أخشاب وعود وجلود دافئة' : 'Woods & Oud'}
+                </button>
+                <button onClick={() => handleQuizAnswer('profile', 'sweet')} className="w-full p-3.5 rounded-2xl border text-sm font-semibold hover:border-amber-500 transition bg-stone-950/40">
+                  🍫 {lang === 'ar' ? 'حلويات وفانيليا وكراميل (Gourmand)' : 'Vanilla & Caramel'}
+                </button>
+                <button onClick={() => handleQuizAnswer('profile', 'fresh')} className="w-full p-3.5 rounded-2xl border text-sm font-semibold hover:border-amber-500 transition bg-stone-950/40">
+                  🍋 {lang === 'ar' ? 'حمضيات وانتعاش مائي وزهور هادئة' : 'Fresh Aquatics'}
+                </button>
               </div>
             )}
 
-            {/* السؤال الرابع: الفصل */}
             {quizStep === 3 && (
-              <div className="space-y-4 text-start">
-                <h3 className="text-lg font-bold text-center">{t.q4}</h3>
-                <div className="grid grid-cols-1 gap-3">
-                  <button onClick={() => handleQuizAnswer('season', 'winter')} className="p-4 rounded-2xl border text-sm font-semibold hover:border-amber-500 transition bg-stone-950/40">
-                    ❄️ {t.q4_opt1}
-                  </button>
-                  <button onClick={() => handleQuizAnswer('season', 'summer')} className="p-4 rounded-2xl border text-sm font-semibold hover:border-amber-500 transition bg-stone-950/40">
-                    ☀️ {t.q4_opt2}
-                  </button>
-                  <button onClick={() => handleQuizAnswer('season', 'all')} className="p-4 rounded-2xl border text-sm font-semibold hover:border-amber-500 transition bg-stone-950/40">
-                    🌍 {t.q4_opt3}
-                  </button>
-                </div>
+              <div className="space-y-3 text-start">
+                <h3 className="text-sm md:text-base font-bold text-center">{lang === 'ar' ? '4. الفصل المفضل؟' : '4. Season?'}</h3>
+                <button onClick={() => handleQuizAnswer('season', 'winter')} className="w-full p-3.5 rounded-2xl border text-sm font-semibold hover:border-amber-500 transition bg-stone-950/40">
+                  ❄️ {lang === 'ar' ? 'أجواء شتوية وباردة (يحتاج ثبات كثيف)' : 'Winter'}
+                </button>
+                <button onClick={() => handleQuizAnswer('season', 'summer')} className="w-full p-3.5 rounded-2xl border text-sm font-semibold hover:border-amber-500 transition bg-stone-950/40">
+                  ☀️ {lang === 'ar' ? 'أجواء صيفية ومعتدلة (يحتاج انتعاش خفيف)' : 'Summer'}
+                </button>
+                <button onClick={() => handleQuizAnswer('season', 'all')} className="w-full p-3.5 rounded-2xl border text-sm font-semibold hover:border-amber-500 transition bg-stone-950/40">
+                  🌍 {lang === 'ar' ? 'عطر جوكر صالح لكل الفصول' : 'All Seasons'}
+                </button>
               </div>
             )}
 
-            {/* النتيجة النهائية: العطر الأساسي والبديل */}
             {quizStep === 4 && matchedPerfumes.primary && (
-              <div className="space-y-8 animate-fade-in">
+              <div className="space-y-6">
                 <div>
-                  <Sparkles className="w-10 h-10 text-amber-500 mx-auto mb-2" />
-                  <span className="text-xs uppercase tracking-widest text-amber-500 font-black">{t.matchFound}</span>
-                  <h3 className="text-2xl md:text-3xl font-black mt-1">
+                  <Sparkles className="w-8 h-8 text-amber-500 mx-auto mb-1" />
+                  <span className="text-[11px] uppercase tracking-widest text-amber-500 font-black">
+                    {lang === 'ar' ? 'العطر الأنسب لذوقك 100%' : '100% Match'}
+                  </span>
+                  <h3 className="text-xl md:text-2xl font-black mt-1">
                     {isRtl ? matchedPerfumes.primary.nameAr : matchedPerfumes.primary.name}
                   </h3>
                 </div>
 
-                <div className="relative max-w-sm mx-auto h-72 rounded-3xl overflow-hidden border border-amber-500/40 shadow-2xl">
-                  <img src={matchedPerfumes.primary.image} alt={matchedPerfumes.primary.name} className="w-full h-full object-cover" />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent flex items-end p-5">
+                <div className="relative max-w-xs mx-auto h-64 rounded-2xl overflow-hidden border border-amber-500/40 shadow-xl">
+                  <img src={matchedPerfumes.primary.image} alt="" className="w-full h-full object-cover" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent flex items-end p-4">
                     <p className="text-xs text-stone-200">
-                      {isRtl ? matchedPerfumes.primary.notesAr : matchedPerfumes.primary.notes}
+                      {isRtl ? matchedPerfumes.primary.notesAr : matchedPerfumes.primary.notesEn}
                     </p>
                   </div>
                 </div>
 
                 <button 
                   onClick={() => addToCart(matchedPerfumes.primary)}
-                  className="w-full max-w-sm mx-auto bg-amber-500 hover:bg-amber-400 text-stone-950 font-extrabold py-3.5 rounded-2xl transition flex items-center justify-center gap-2 shadow-xl"
+                  className="w-full max-w-xs mx-auto bg-amber-500 hover:bg-amber-400 text-stone-950 font-extrabold py-3 rounded-2xl transition flex items-center justify-center gap-2 text-sm"
                 >
-                  <ShoppingBag className="w-5 h-5" />
-                  <span>{t.addToCart} ({matchedPerfumes.primary.price} {t.currency})</span>
+                  <ShoppingBag className="w-4 h-4" />
+                  <span>{lang === 'ar' ? 'أضف للسلة (50ml)' : 'Add to Bag (50ml)'}</span>
                 </button>
 
-                {/* الخيار البديل في حال لم يفضل العميل الأول */}
                 {matchedPerfumes.alternative && (
-                  <div className="pt-6 border-t border-stone-700/50 space-y-4">
-                    <h4 className="text-sm font-bold text-stone-400">{t.altMatch}</h4>
-                    <div className={`p-4 rounded-2xl border flex items-center justify-between max-w-md mx-auto ${
-                      isDark ? 'bg-stone-950/60 border-stone-800' : 'bg-stone-50 border-stone-200'
-                    }`}>
-                      <div className="flex items-center gap-3 text-start">
-                        <img src={matchedPerfumes.alternative.image} alt="" className="w-16 h-16 object-cover rounded-xl border border-stone-700" />
+                  <div className="pt-4 border-t border-stone-800 space-y-3">
+                    <h4 className="text-xs font-bold text-stone-400">{lang === 'ar' ? 'عطر بديل قد يعجبك أيضاً:' : 'Alternative option:'}</h4>
+                    <div className="p-3 rounded-2xl border flex items-center justify-between max-w-xs mx-auto bg-stone-950 border-stone-800">
+                      <div className="flex items-center gap-2 text-start">
+                        <img src={matchedPerfumes.alternative.image} alt="" className="w-12 h-12 object-cover rounded-xl" />
                         <div>
-                          <h5 className="font-bold text-sm">{isRtl ? matchedPerfumes.alternative.nameAr : matchedPerfumes.alternative.name}</h5>
-                          <span className="text-xs text-amber-500 font-bold">{matchedPerfumes.alternative.price} {t.currency}</span>
+                          <h5 className="font-bold text-xs">{isRtl ? matchedPerfumes.alternative.nameAr : matchedPerfumes.alternative.name}</h5>
+                          <span className="text-[11px] text-amber-500 font-bold">{matchedPerfumes.alternative.prices["50ml"]} ج.م</span>
                         </div>
                       </div>
                       <button 
                         onClick={() => addToCart(matchedPerfumes.alternative)}
-                        className="p-2.5 rounded-xl bg-amber-500 text-stone-950 font-bold text-xs hover:bg-amber-400 transition"
+                        className="px-3 py-1.5 rounded-xl bg-amber-500 text-stone-950 font-bold text-[11px]"
                       >
-                        {t.addToCart}
+                        {lang === 'ar' ? 'طلب' : 'Add'}
                       </button>
                     </div>
                   </div>
@@ -1302,100 +1220,53 @@ export default function App() {
                   className="text-xs text-stone-400 hover:text-amber-500 flex items-center justify-center gap-1 mx-auto"
                 >
                   <RefreshCw className="w-3.5 h-3.5" />
-                  <span>{t.tryAgain}</span>
+                  <span>{lang === 'ar' ? 'إعادة الاختبار' : 'Restart'}</span>
                 </button>
               </div>
             )}
           </div>
         )}
 
-        {/* صفحة النقاط والمكافآت */}
+        {/* صفحة النقاط */}
         {activeTab === 'rewards' && (
           <div className="max-w-2xl mx-auto space-y-6">
             {!session ? (
-              <div className={`p-10 rounded-3xl border text-center space-y-4 ${
-                isDark ? 'bg-stone-900/60 border-stone-800' : 'bg-white border-stone-200 shadow-xl'
-              }`}>
-                <Award className="w-12 h-12 text-amber-500 mx-auto" />
-                <h2 className="text-2xl font-bold">{t.myPoints}</h2>
-                <p className="text-stone-400 text-sm">{t.heroBadge}</p>
-                <button 
-                  onClick={handleGoogleLogin}
-                  className="bg-amber-500 text-stone-950 font-bold px-6 py-3 rounded-2xl hover:bg-amber-400 transition shadow-lg"
-                >
-                  {t.loginWithGoogle}
+              <div className="p-8 rounded-3xl border border-stone-800 bg-stone-900/60 text-center space-y-4">
+                <Award className="w-10 h-10 text-amber-500 mx-auto" />
+                <h2 className="text-xl font-bold">{lang === 'ar' ? 'نادي مكافآت العنابي' : 'Rewards Club'}</h2>
+                <p className="text-stone-400 text-xs">سجّل دخولك الآن بـ Google واكسب 50 نقطة ترحيبية فورية تُخصم من طلباتك.</p>
+                <button onClick={handleGoogleLogin} className="bg-amber-500 text-stone-950 font-bold px-6 py-2.5 rounded-2xl text-sm">
+                  الدخول بحساب Google
                 </button>
               </div>
             ) : (
-              <div className={`p-8 rounded-3xl border space-y-6 ${
-                isDark ? 'bg-stone-900/60 border-stone-800' : 'bg-white border-stone-200 shadow-xl'
-              }`}>
-                <div className="flex justify-between items-center border-b border-stone-700/40 pb-4">
+              <div className="p-6 md:p-8 rounded-3xl border border-stone-800 bg-stone-900/60 space-y-6">
+                <div className="flex justify-between items-center border-b border-stone-800 pb-4">
                   <div className="flex items-center gap-3">
                     {profile?.avatar_url && (
-                      <img src={profile.avatar_url} alt="Profile" className="w-12 h-12 rounded-full border border-amber-500" />
+                      <img src={profile.avatar_url} alt="" className="w-10 h-10 rounded-full border border-amber-500" />
                     )}
                     <div>
-                      <h2 className="text-lg font-bold">{profile?.full_name}</h2>
+                      <h2 className="text-base font-bold">{profile?.full_name}</h2>
                       <span className="text-xs text-stone-400">{profile?.email}</span>
                     </div>
                   </div>
-                  <span className="text-xs bg-amber-500/10 border border-amber-500/30 text-amber-500 px-3 py-1 rounded-xl font-bold">
-                    {profile?.tier || 'VIP'}
+                  <span className="text-xs bg-amber-500/10 text-amber-500 px-3 py-1 rounded-xl font-bold border border-amber-500/30">
+                    عضوية {profile?.tier || 'ذهبية'}
                   </span>
                 </div>
-                <div className={`p-5 rounded-2xl border flex justify-between items-center ${
-                  isDark ? 'bg-stone-950 border-stone-800' : 'bg-stone-50 border-stone-200'
-                }`}>
+                <div className="p-5 rounded-2xl bg-stone-950 border border-stone-800 flex justify-between items-center">
                   <div>
-                    <span className="text-xs text-stone-400">{t.welcomePointsMsg}</span>
-                    <div className="text-4xl font-black text-amber-500 mt-1">{profile?.points_balance || 0}</div>
-                    <span className="text-xs text-stone-400 mt-1 block">
-                      = {((profile?.points_balance || 0) * 0.5)} {t.currency}
-                    </span>
+                    <span className="text-xs text-stone-400">رصيدك المتاح من النقاط:</span>
+                    <div className="text-3xl font-black text-amber-500 mt-1">{profile?.points_balance || 0}</div>
+                    <span className="text-xs text-stone-400 mt-1 block">تساوي خصم {((profile?.points_balance || 0) * 0.5)} ج.م</span>
                   </div>
-                  <button 
-                    onClick={() => setIsCartOpen(true)}
-                    className="bg-amber-500 hover:bg-amber-400 text-stone-950 text-xs px-4 py-2.5 rounded-xl font-bold transition shadow"
-                  >
-                    {t.cart}
+                  <button onClick={() => setIsCartOpen(true)} className="bg-amber-500 text-stone-950 text-xs px-4 py-2 rounded-xl font-bold">
+                    استخدمها في السلة
                   </button>
                 </div>
               </div>
             )}
-          </div>
-        )}
-
-        {/* لوحة تحكم الإدارة */}
-        {activeTab === 'admin' && profile?.role === 'admin' && (
-          <div className="max-w-4xl mx-auto space-y-6">
-            <div className="flex items-center gap-2 border-b border-stone-800 pb-4">
-              <ShieldCheck className="w-6 h-6 text-red-500" />
-              <h2 className="text-2xl font-bold">{t.admin}</h2>
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className={`p-6 rounded-3xl border flex items-center justify-between ${
-                isDark ? 'bg-stone-900/80 border-stone-800' : 'bg-white border-stone-200 shadow'
-              }`}>
-                <div>
-                  <span className="text-stone-400 text-sm flex items-center gap-2">
-                    <Users className="w-4 h-4 text-amber-500" />
-                    <span>{t.totalVisitors}</span>
-                  </span>
-                  <div className="text-4xl font-black mt-2">{visitorCount}</div>
-                </div>
-                <div className="p-4 bg-amber-500/10 rounded-2xl border border-amber-500/20">
-                  <Eye className="w-8 h-8 text-amber-500" />
-                </div>
-              </div>
-              <div className={`p-6 rounded-3xl border ${
-                isDark ? 'bg-stone-900/80 border-stone-800' : 'bg-white border-stone-200 shadow'
-              }`}>
-                <span className="text-stone-400 text-sm">Superadmin</span>
-                <div className="text-lg font-bold mt-2">{profile?.email}</div>
-                <span className="text-xs text-emerald-500 bg-emerald-500/10 px-2 py-0.5 rounded mt-2 inline-block font-semibold">Active</span>
-              </div>
-            </div>
           </div>
         )}
       </main>
