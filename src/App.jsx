@@ -2,8 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { supabase } from './supabaseClient';
 import { 
   Award, Gift, Share2, Sparkles, ShoppingBag, 
-  LogOut, Users, Eye, ShieldCheck, Flame, Check, 
-  Trash2, X, Plus, Minus, Send, Compass, PackageCheck
+  LogOut, Users, Eye, ShieldCheck, Flame, 
+  X, Plus, Minus, Send, Compass
 } from 'lucide-react';
 
 const PERFUMES = [
@@ -42,8 +42,8 @@ const PERFUMES = [
   }
 ];
 
-// رقم واتساب المتجر لاستقبال الطلبات (قم بتغييره للرقم المطلوب بصيغة دولية)
-const STORE_WHATSAPP_NUMBER = "201000000000";
+// رقم واتساب البيزنس بالصيغة الدولية لمصر
+const STORE_WHATSAPP_NUMBER = "201110192901";
 
 export default function App() {
   const [session, setSession] = useState(null);
@@ -56,14 +56,13 @@ export default function App() {
   const [cart, setCart] = useState([]);
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [pointsToRedeem, setPointsToRedeem] = useState(0);
-  const [shippingDetails, setShippingDetails] = useState({ name: '', phone: '', address: '', notes: '' });
+  const [shippingDetails, setShippingDetails] = useState({ name: '', phone: '', address: '' });
 
   // حالة اختبار اختيار العطر
   const [quizStep, setQuizStep] = useState(0);
   const [quizAnswers, setQuizAnswers] = useState({ family: '', occasion: '' });
   const [recommendedPerfume, setRecommendedPerfume] = useState(null);
 
-  // إشعار علوي
   const showToast = (msg) => {
     setNotification(msg);
     setTimeout(() => setNotification(''), 4000);
@@ -122,7 +121,6 @@ export default function App() {
     showToast('تم تسجيل الخروج بنجاح');
   };
 
-  // وظائف سلة الشراء
   const addToCart = (perfume) => {
     setCart(prev => {
       const existing = prev.find(item => item.id === perfume.id);
@@ -132,7 +130,7 @@ export default function App() {
       return [...prev, { ...perfume, qty: 1 }];
     });
     setIsCartOpen(true);
-    showToast(`تمت إضافة ${perfume.name} للسلة!`);
+    showToast(`تمت إضافة ${perfume.name} للسلة`);
   };
 
   const updateQuantity = (id, delta) => {
@@ -152,7 +150,7 @@ export default function App() {
   const discountAmount = pointsToRedeem * 0.5; // كل نقطة = 0.5 جنيه
   const finalTotal = Math.max(0, subtotal - discountAmount);
 
-  // إتمام الطلب وتوليد رسالة WhatsApp وحفظه في السيرفر
+  // إتمام الطلب وتجهيز رسالة الواتساب النظيفة
   const handleCheckout = async (e) => {
     e.preventDefault();
     if (cart.length === 0) return showToast('السلة فارغة!');
@@ -160,7 +158,7 @@ export default function App() {
       return showToast('يرجى كتابة الاسم ورقم الموبايل والعنوان');
     }
 
-    // 1. خصم النقاط من رصيد المستخدم إذا تم استخدامها
+    // 1. تحديث رصيد النقاط في قاعدة البيانات
     if (pointsToRedeem > 0 && profile) {
       const updatedBalance = profile.points_balance - pointsToRedeem + potentialPointsEarned;
       await supabase.from('profiles').update({ points_balance: updatedBalance }).eq('id', profile.id);
@@ -176,7 +174,7 @@ export default function App() {
       setProfile(prev => ({ ...prev, points_balance: updatedBalance }));
     }
 
-    // 2. تسجيل الطلب في قاعدة البيانات
+    // 2. تسجيل الطلب في Supabase
     await supabase.from('orders').insert([{
       user_id: profile?.id || null,
       customer_name: shippingDetails.name,
@@ -189,29 +187,28 @@ export default function App() {
       total: finalTotal
     }]);
 
-    // 3. تجهيز رسالة WhatsApp وإرسالها
-    const itemsList = cart.map(i => `• ${i.name} (عدد: ${i.qty}) - ${i.price * i.qty} ج.م`).join('\n');
-    const msg = `👑 *طلب جديد من متجر العنابي للعطور* 👑\n\n` +
+    // 3. صياغة رسالة الواتساب بدون رموز غير متوافقة
+    const itemsList = cart.map(i => `- ${i.name} (الكمية: ${i.qty}) = ${i.price * i.qty} ج.م`).join('\n');
+    const msg = `*طلب جديد من متجر العنابي للعطور*\n\n` +
       `*بيانات العميل:*\n` +
-      `👤 الاسم: ${shippingDetails.name}\n` +
-      `📞 الموبايل: ${shippingDetails.phone}\n` +
-      `📍 العنوان: ${shippingDetails.address}\n\n` +
+      `الاسم: ${shippingDetails.name}\n` +
+      `الموبايل: ${shippingDetails.phone}\n` +
+      `العنوان: ${shippingDetails.address}\n\n` +
       `*تفاصيل الطلب:*\n${itemsList}\n\n` +
-      `💰 الإجمالي قبل الخصم: ${subtotal} ج.م\n` +
-      `🎁 خصم النقاط المستخدمة: ${discountAmount} ج.م (${pointsToRedeem} نقطة)\n` +
-      `💵 *المبلغ المطلوب عند الاستلام: ${finalTotal} ج.م*\n` +
-      `✨ النقاط المكتسبة من هذا الطلب: +${potentialPointsEarned} نقطة`;
+      `الإجمالي قبل الخصم: ${subtotal} ج.م\n` +
+      (discountAmount > 0 ? `خصم النقاط: ${discountAmount} ج.م (${pointsToRedeem} نقطة)\n` : '') +
+      `*المطلوب للدفع عند الاستلام: ${finalTotal} ج.م*\n` +
+      `النقاط المكتسبة من الطلب: +${potentialPointsEarned} نقطة`;
 
-    const whatsappUrl = `https://wa.me/${STORE_WHATSAPP_NUMBER}?text=${encodeURIComponent(msg)}`;
+    const whatsappUrl = `https://api.whatsapp.com/send?phone=${STORE_WHATSAPP_NUMBER}&text=${encodeURIComponent(msg)}`;
     window.open(whatsappUrl, '_blank');
 
     setCart([]);
     setIsCartOpen(false);
     setPointsToRedeem(0);
-    showToast('تم تأكيد الطلب بنجاح وفتح محادثة الواتساب!');
+    showToast('تم تأكيد الطلب بنجاح وفتح محادثة الواتساب');
   };
 
-  // تشغيل اختبار العطور
   const handleQuizChoice = (key, value) => {
     const nextAnswers = { ...quizAnswers, [key]: value };
     setQuizAnswers(nextAnswers);
@@ -219,7 +216,6 @@ export default function App() {
     if (quizStep === 0) {
       setQuizStep(1);
     } else {
-      // إيجاد العطر الأقرب
       const match = PERFUMES.find(p => p.family === nextAnswers.family) || PERFUMES[0];
       setRecommendedPerfume(match);
       setQuizStep(2);
@@ -230,7 +226,7 @@ export default function App() {
     <div dir="rtl" className="min-h-screen bg-[#09090b] text-stone-100 font-sans selection:bg-amber-500 selection:text-black">
       {/* Toast Notification */}
       {notification && (
-        <div className="fixed top-5 left-1/2 -translate-x-1/2 z-50 bg-amber-500 text-stone-950 px-6 py-2.5 rounded-full font-bold shadow-2xl flex items-center gap-2 border border-amber-300 animate-fade-in">
+        <div className="fixed top-5 left-1/2 -translate-x-1/2 z-50 bg-amber-500 text-stone-950 px-6 py-2.5 rounded-full font-bold shadow-2xl flex items-center gap-2 border border-amber-300">
           <Sparkles className="w-5 h-5" />
           <span>{notification}</span>
         </div>
@@ -265,7 +261,7 @@ export default function App() {
             >
               <Award className="w-4 h-4" />
               <span className="hidden sm:inline">نقاطي</span>
-              {profile ? `(${profile.points_balance})` : ''}
+              {profile ? ` (${profile.points_balance})` : ''}
             </button>
 
             {profile?.role === 'admin' && (
@@ -278,7 +274,7 @@ export default function App() {
               </button>
             )}
 
-            {/* أيقونة فتح السلة */}
+            {/* سلة الشراء */}
             <button 
               onClick={() => setIsCartOpen(true)}
               className="relative p-2.5 rounded-xl bg-stone-900 border border-stone-800 text-amber-400 hover:border-amber-500 transition"
@@ -305,10 +301,10 @@ export default function App() {
         </div>
       </header>
 
-      {/* سلة الشراء الجانبية (Slide-over Cart) */}
+      {/* سلة الشراء الجانبية */}
       {isCartOpen && (
         <div className="fixed inset-0 z-50 flex justify-end bg-black/60 backdrop-blur-sm">
-          <div className="w-full max-w-md bg-[#0e0e11] border-r border-stone-800 h-full flex flex-col justify-between p-6 overflow-y-auto animate-slide-left">
+          <div className="w-full max-w-md bg-[#0e0e11] border-r border-stone-800 h-full flex flex-col justify-between p-6 overflow-y-auto">
             <div>
               <div className="flex justify-between items-center border-b border-stone-800 pb-4 mb-4">
                 <div className="flex items-center gap-2">
@@ -348,12 +344,12 @@ export default function App() {
                     </div>
                   ))}
 
-                  {/* شريط استبدال النقاط المباشر */}
+                  {/* شريط خصم النقاط */}
                   {profile && profile.points_balance > 0 && (
                     <div className="bg-amber-500/10 border border-amber-500/30 p-4 rounded-2xl space-y-2">
                       <div className="flex justify-between text-xs">
                         <span className="text-amber-300 font-semibold">استبدال نقاطك لخصم فوري:</span>
-                        <span className="text-amber-400 font-bold">{pointsToRedeem} نقطة = {discountAmount} ج.م خصم</span>
+                        <span className="text-amber-400 font-bold">{pointsToRedeem} نقطة = {discountAmount} ج.م</span>
                       </div>
                       <input 
                         type="range" 
@@ -368,10 +364,10 @@ export default function App() {
                     </div>
                   )}
 
-                  {/* ملخص المبالغ */}
+                  {/* ملخص الحساب */}
                   <div className="border-t border-stone-800 pt-3 space-y-1.5 text-xs">
                     <div className="flex justify-between text-stone-400">
-                      <span>الإجمالي الفرعي:</span>
+                      <span>الإجمالي قبل الخصم:</span>
                       <span>{subtotal} ج.م</span>
                     </div>
                     {discountAmount > 0 && (
@@ -385,7 +381,7 @@ export default function App() {
                       <span className="text-amber-400 font-bold">+{potentialPointsEarned} نقطة</span>
                     </div>
                     <div className="flex justify-between text-base font-extrabold text-white pt-2 border-t border-stone-800">
-                      <span>الإجمالي النهائي:</span>
+                      <span>المطلوب للدفع عند الاستلام:</span>
                       <span className="text-amber-400">{finalTotal} ج.م</span>
                     </div>
                   </div>
@@ -393,7 +389,7 @@ export default function App() {
               )}
             </div>
 
-            {/* نموذج تفاصيل الشحن والتأكيد */}
+            {/* تفاصيل العميل وإرسال الواتساب */}
             {cart.length > 0 && (
               <form onSubmit={handleCheckout} className="border-t border-stone-800 pt-4 space-y-3">
                 <input 
@@ -406,14 +402,14 @@ export default function App() {
                 />
                 <input 
                   type="tel" 
-                  placeholder="رقم الموبايل (واتساب) *" 
+                  placeholder="رقم الموبايل *" 
                   required
                   value={shippingDetails.phone}
                   onChange={(e) => setShippingDetails({ ...shippingDetails, phone: e.target.value })}
                   className="w-full bg-stone-950 border border-stone-800 rounded-xl px-3.5 py-2.5 text-sm focus:border-amber-500 outline-none"
                 />
                 <textarea 
-                  placeholder="المحافظة والعنوان بالتفصيل *" 
+                  placeholder="العنوان بالتفصيل *" 
                   required
                   rows="2"
                   value={shippingDetails.address}
@@ -433,9 +429,9 @@ export default function App() {
         </div>
       )}
 
-      {/* المحتوى الرئيسي للتبويبات */}
+      {/* المحتوى الرئيسي */}
       <main className="max-w-6xl mx-auto px-4 py-8">
-        {/* المتجر */}
+        {/* صفحة المتجر */}
         {activeTab === 'shop' && (
           <div className="space-y-10">
             <div className="rounded-3xl border border-stone-800 bg-gradient-to-r from-stone-900 via-[#181113] to-stone-900 p-8 md:p-12 relative overflow-hidden">
@@ -497,22 +493,22 @@ export default function App() {
           </div>
         )}
 
-        {/* مستكشف العطور (Fragrance Quiz) */}
+        {/* مستكشف العطور */}
         {activeTab === 'quiz' && (
           <div className="max-w-xl mx-auto bg-stone-900/80 border border-stone-800 p-8 rounded-3xl text-center space-y-6">
             {quizStep === 0 && (
               <div className="space-y-4">
                 <Compass className="w-12 h-12 text-amber-500 mx-auto" />
-                <h3 className="text-xl font-bold text-white">إيه الطابع العطري الأقرب لذوقك؟</h3>
+                <h3 className="text-xl font-bold text-white">ما هو الطابع العطري الأقرب لذوقك؟</h3>
                 <div className="grid grid-cols-1 gap-3 pt-2">
                   <button onClick={() => handleQuizChoice('family', 'woody')} className="p-4 rounded-2xl bg-stone-950 border border-stone-800 hover:border-amber-500 text-right transition">
-                    🌲 **أخشاب وعنبر:** فخم وله هيبة وحضور قوي
+                    🌲 <b>أخشاب وعنبر:</b> فخم وله هيبة وحضور قوي
                   </button>
                   <button onClick={() => handleQuizChoice('family', 'sweet')} className="p-4 rounded-2xl bg-stone-950 border border-stone-800 hover:border-amber-500 text-right transition">
-                    ☕ **فانيليا وقهوة:** دافئ، رومانسي وسويت
+                    ☕ <b>فانيليا وقهوة:</b> دافئ ورومانسي
                   </button>
                   <button onClick={() => handleQuizChoice('family', 'fresh')} className="p-4 rounded-2xl bg-stone-950 border border-stone-800 hover:border-amber-500 text-right transition">
-                    🍋 **حمضيات ولافندر:** منعش ونظيف ومثالي للاستخدام اليومي
+                    🍋 <b>حمضيات ولافندر:</b> منعش ونظيف للاستخدام اليومي
                   </button>
                 </div>
               </div>
@@ -520,22 +516,22 @@ export default function App() {
 
             {quizStep === 1 && (
               <div className="space-y-4">
-                <h3 className="text-xl font-bold text-white">إيه المناسبة الأساسية اللي محتاج العطر عشانها؟</h3>
+                <h3 className="text-xl font-bold text-white">ما هي المناسبة الأساسية التي تبحث عن عطر لها؟</h3>
                 <div className="grid grid-cols-1 gap-3 pt-2">
                   <button onClick={() => handleQuizChoice('occasion', 'evening')} className="p-4 rounded-2xl bg-stone-950 border border-stone-800 hover:border-amber-500 text-right transition">
                     🌙 خروجات ومناسبات مسائية هامة
                   </button>
                   <button onClick={() => handleQuizChoice('occasion', 'daily')} className="p-4 rounded-2xl bg-stone-950 border border-stone-800 hover:border-amber-500 text-right transition">
-                    ☀️ شغل واستخدام يومي متكرر
+                    ☀️ عمل واستخدام يومي متكرر
                   </button>
                 </div>
               </div>
             )}
 
             {quizStep === 2 && recommendedPerfume && (
-              <div className="space-y-4 animate-fade-in">
+              <div className="space-y-4">
                 <Sparkles className="w-12 h-12 text-amber-400 mx-auto" />
-                <span className="text-xs uppercase tracking-widest text-amber-500 font-bold">العطر الأنسب لشخصيتك</span>
+                <span className="text-xs uppercase tracking-widest text-amber-500 font-bold">العطر الأنسب لاختياراتك</span>
                 <h3 className="text-2xl font-black text-white">{recommendedPerfume.name}</h3>
                 <img src={recommendedPerfume.image} alt={recommendedPerfume.name} className="w-48 h-48 object-cover rounded-2xl mx-auto border border-amber-500/40" />
                 <p className="text-stone-400 text-xs">{recommendedPerfume.notes}</p>
@@ -543,7 +539,7 @@ export default function App() {
                   onClick={() => addToCart(recommendedPerfume)}
                   className="w-full bg-amber-500 text-stone-950 font-bold py-3.5 rounded-2xl hover:bg-amber-400 transition"
                 >
-                  أضف لعطرك الموصى به للسلة ({recommendedPerfume.price} ج.م)
+                  أضف العطر الموصى به للسلة ({recommendedPerfume.price} ج.م)
                 </button>
               </div>
             )}
@@ -557,7 +553,7 @@ export default function App() {
               <div className="bg-stone-900/70 p-8 rounded-3xl border border-stone-800 text-center space-y-4">
                 <Award className="w-12 h-12 text-amber-400 mx-auto" />
                 <h2 className="text-2xl font-bold text-white">نادي مكافآت العنابي</h2>
-                <p className="text-stone-400 text-sm">سجل دخولك الآن بحسابك للاستفادة من النزول التلقائي للنقاط مع كل طلبية.</p>
+                <p className="text-stone-400 text-sm">سجل دخولك الآن بحساب Google لتفعيل محفظتك وتجميع النقاط مع كل طلبية.</p>
                 <button onClick={handleGoogleLogin} className="bg-amber-500 text-stone-950 font-bold px-6 py-3 rounded-2xl hover:bg-amber-400 transition">
                   الدخول بحساب Google
                 </button>
@@ -584,7 +580,7 @@ export default function App() {
                     <div className="text-4xl font-black text-amber-400 mt-1">{profile?.points_balance || 0}</div>
                     <span className="text-xs text-stone-500 mt-1 block">تساوي خصم {((profile?.points_balance || 0) * 0.5)} ج.م</span>
                   </div>
-                  <button onClick={() => { setIsCartOpen(true); }} className="bg-stone-800 text-stone-200 text-xs px-4 py-2.5 rounded-xl font-bold hover:bg-stone-700">
+                  <button onClick={() => setIsCartOpen(true)} className="bg-stone-800 text-stone-200 text-xs px-4 py-2.5 rounded-xl font-bold hover:bg-stone-700">
                     استخدمها عند الدفع
                   </button>
                 </div>
